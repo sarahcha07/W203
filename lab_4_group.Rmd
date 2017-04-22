@@ -13,6 +13,14 @@ header-includes:
    - \usepackage{bigints}
 ---
 
+# Introduction
+
+The following analyses provide an investigation of the effects of prenatal care on infant health.  Funding for the study is provided by an anonymous health advocacy group and the data is taken from the National Center for Health Statistics and from birth certificates.  This report presents statistical models which are motivated by widely accepted claims regarding pregnancy and infant health:
+
+Infant health can be measured by birth weight-- low birth weights are associated with multiple developmental issues.  Birth weight is affected by race, the duration of gestation prior to birth, and prenatal growth rate, and prenatal growth rate in turn is governed by poverty, mother's age, drug use, alcohol, smoking/nicotine, diseases, mother's diet and physical health, mother's prenatal depression, and environmental toxins.  Additionally, early and regular prenatal care is known to reduce the chance of infant death and developmental problems.
+
+This set of background information forms the basis for three linear regression models that seek to explain the effects of prenatal care on infant health.
+
 ```{r setup, include=FALSE}
 setwd("/Users/sarahcha/Documents/W203/Lab_4")
 load("bwght_w203.RData")
@@ -328,6 +336,12 @@ hist(sample$npvissq, main = "Distribution of 'npvissq' Variable",
 
 - One model with only the explanatory variables of key interest.
 
+The sample contains multiple variables related to infant health, including birth weight ('bwght'), one-minute APGAR score (omaps), five-minute APGAR score (fmaps), low birth weight ('lbw'), and very-low birth weight ('vlbw').  The purpose of the APGAR score is to determine if a newborn requires immediate medical attention, and background knowledge indicates that infant birth weight is highly indicative of future infant health, so the 'bwght' variable has thus been selected to operationalize the concept of 'infant health' in this preliminary model.  The 'lbw' and 'vlbw' variables are indicators that focus only on a small subset of infants, and a model that uses 'lbw' or 'vlbw' as its dependent variable requires an advanced form of analysis that will not be used in this study.
+
+The given premises regarding infant health identify multiple other variables in the sample that have strong explanatory potential for infant health, namely number of prenatal visits ('npvis'), the month of pregnancy prenatal care began ('monpre'), mother's age ('mage'), drinks per week ('drink'), and cigarettes per day ('cigs').  The sample additionally contains multiple indicator variables representing the race of the parents, including 'mwhte', 'mblck', 'moth', 'fwhte', 'fblck', and 'foth'.  These variables may also increase the explanatory ability of the model, given that a baby's race is related to its birth weight.
+
+This study begins its analysis by characterizing a simple foundational model upon which deeper analysis can then be performed: $bwght = \beta_0 + \beta_1 mage + \beta_2 monpre + u$
+
 ```{r}
 # #maybe save the race stuff for later
 # blackBaby = sample$mblck*sample$fblck
@@ -384,6 +398,54 @@ plot(model_1, which = 3)
 plot(model_1, which = 4)
 ```
 
+\emph{Assumption 1: Linear Population Model}\
+The assumption of a linear population model is met since this model has been defined to be linear in its parameters.
+```{r}
+plot(model_1$fitted.values, (model_1$fitted.values + model_1$residuals), main = "Observed vs Fitted Values for Model 1", xlab = "Fitted", ylab = "Observed")
+```
+Additionally, the observed vs predicted values plot for this model does not provide a strong indication of non-linearity.
+
+\emph{Assumption 2: Random Sampling}\
+The sample used is expected to be random by design, and unfortunately, the data collection process cannot be evaluated.  However, a closer look at the 'fblck', 'fwhte', 'mblck', and 'mwhte' variables shows that less than 100 babies (5%) in the data are black (defined as having both black parents), while the vast majority are white (defined by having both white parents).  Given that the black population in the US is approximately 12% (or 'over 10%') of the total population, the sample used in this study is not completely representative of the population and may have a minor grouping issue with respect to the race of babies.  Examination of the 'monpre', 'npvis', 'omaps', 'fmaps', 'cigs', and 'drink' variables shows that most mothers in the data had early and frequent prenatal care, most infants had high APGAR scores (especially by the five-minute mark), and that most mothers refrained from cigarettes and drinking during pregnancy.  These variables lack data with respect to poor prenatal care and poor infant health, but this is acceptable since such distributions are roughly representative of the population.
+
+The under-representation of black babies is not large in this sample-- this study thus assumes that the sample is random.
+
+\emph{Assumption 3: No Perfect Multicollinearity}\
+The variance inflation factor explains how much the standard error of each coefficient is inflated due to collinearity with other variables:
+```{r}
+vif(model_1)
+```
+The VIF is low enough (<<4) to allay concerns about multicollinearity in this model.  In fact, the VIF being close to 1 demonstrates almost no multicollinearity in the model.
+
+\emph{Assumption 4: Zero-Conditional Mean}\
+The smoothing curve in the residuals vs fitted plot for this model (which tracks the conditional mean of the residuals) shows nearly no curvature, especially in the bulk of data points, which indicates that the zero-conditional mean assumption holds.
+
+\emph{Assumption 5: Homoskedasticity}\
+The same residuals vs fitted plot analyzed previously also demonstrates a band of approximately equal width in the residuals, across all fitted values, suggesting that the assumption of homoskedasticity holds for this model.  This is also apparent in the scale-location plot, in which its horizontal smoothing curve is expected when homoskedasticity holds.
+```{r}
+bptest(model_1)
+```
+The Breush-Pagan test is not significant enough to reject the null hypothesis of constant variance at the 5% significance level, which is consistent with the homoskedasticity demonstrated in the diagnostic plots.  Its p-value of 0.06 means this test does have borderline significance, but this low p-value may simply be due to the large sample size.  For safe measure, any hypothesis testing using this model should still use the heteroskedasticity-robust Huber-White standard errors.
+
+\emph{Assumption 6: Normality of Errors}\
+```{r}
+hist(model_1$residuals, breaks = "fd", main = "Distribution of Residuals for Model 1", xlab = "Residuals")
+shapiro.test(model_1$residuals)
+```
+Both the normal q-q plot and the histogram of residuals show a minor departure from normality in the residuals, suggesting a violation of the assumption of normality of errors.  Additionally, the Shapiro-Wilk test is significant at any significance level, which further indicates that this analysis should reject the null hypothesis that the residuals come from a normal distribution.  However, due to the large sample size, the Central Limit Theorem allows the OLS coefficients in this model to still be treated as normal.
+
+\emph{Additional Notes:}\
+This model is not concerned with outliers since the diagnostic plots show that Cook's distance (a measure of influence) is small for every observation.
+```{r}
+AIC(model_1)
+```
+The Akaike Information Criterion (AIC), a parsimony-adjusted measure of fit, for this model is 28420.36.
+```{r}
+residualsSquared = (model_1$residuals)^2
+model_1_unrestricted = lm(bwght ~ mage + monpre + residualsSquared, data = sample)
+summary(model_1_unrestricted)
+```
+The regression specification error test (RESET) shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant.  This suggests that the model is actually misspecified.
 
 ## Model 2
 For model 2, we took the variables in model 1 and made a few additions. Namely, given the exploratory data analysis showed that "other" babies had far lower birth weights than other races, we added an indicator variable for race which = 1 if baby's race was "other" and =0 otherwise.  \
