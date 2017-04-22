@@ -482,4 +482,42 @@ plot(model2_3, which = 3)
 plot(model2_3, which = 5)
 ```
 
+\emph{Changes to the 6 Classical Linear Model Assumptions for Model 2:}\
+The assumption of a linear population is still met since this model has been defined to be linear in its parameters.
+```{r}
+plot(model2_3$fitted.values, (model2_3$fitted.values + model2_3$residuals), main = "Observed vs Fitted Values for Model 2", xlab = "Fitted", ylab = "Observed")
+```
+Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
 
+The sample has not changed for Model 2, so it is still considered to be random.
+
+```{r}
+X2 = data.matrix(subset(sample, select=c("cigs", "drink", "logvis_mo", "logvis_mo_sq", "otherbb", "male", "mage", "magesq")))
+(Cor = cor(X2))
+```
+The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq'.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  However, this does not bias results, and does not affect interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq'.
+
+The residuals vs fitted plot for Model 2 shows some curvature, but is reasonably flat in the bulk of the data, so the zero-conditional mean assumption still holds.
+
+```{r}
+bptest(model2_3)
+```
+The Breush-Pagan test for Model 2 is highly significant, which indicates that heteroskedasticity is present.  However, it is unclear that this will be an issue since the very low p-value may again be due to the large sample size, and since the scale-location plot shows a flat smoothing curve in the bulk of data.  The heteroskedasticity-robust Huber-White standard errors will be used for this model due to the uncertainty surrounding violoation of the homoskedasticity assumption.
+
+```{r}
+hist(model2_3$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
+shapiro.test(model2_3$residuals)
+```
+The large sample size and the Central Limit Theorem again allow Model 2 to rely on OLS asymptotics despite the departure from normality demonstrated by its normal q-q plot, the histogram of residuals, and the Shapiro-Wilk test.
+
+Cook's distance remains small for every observation, so outliers are again of no concern.
+```{r}
+AIC(model2_3)
+```
+The Akaike Information Criterion (AIC) for Model 2 is -898.1228.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
+```{r}
+residualsSquared2 = (model2_3$residuals)^2
+model2_3_unrestricted=  lm(lbwght ~ cigs + drink + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
+summary(model2_3_unrestricted)
+```
+The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.
