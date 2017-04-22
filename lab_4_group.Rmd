@@ -1,0 +1,365 @@
+---
+title: "birthweight"
+author: "Sarah Cha, Andrew Kabatznick, Kalvin Kao"
+date: "April 19, 2017"
+output: pdf_document
+header-includes:
+   - \usepackage{bbm}
+   - \usepackage{amsmath}
+   - \usepackage{booktabs}
+   - \usepackage{amssymb}
+   - \usepackage{fdsymbol}
+   - \usepackage{textgreek}
+   - \usepackage{bigints}
+---
+
+```{r setup, include=FALSE}
+setwd("/Users/sarahcha/Documents/W203/Lab_4")
+load("bwght_w203.RData")
+library(car)
+library(dplyr)
+library(lmtest)
+library(sandwich)
+library(gridExtra)
+```
+```{r echo = FALSE}
+sample = na.exclude(data, complete.cases(sample))
+sample$lbw = factor(sample$lbw)
+sample$vlbw = factor(sample$vlbw)
+sample$male = factor(sample$male)
+sample$mwhte = factor(sample$mwhte)
+sample$mblck = factor(sample$mblck)
+sample$moth = factor(sample$moth)
+sample$fwhte = factor(sample$fwhte)
+sample$fblck= factor(sample$fblck)
+sample$foth = factor(sample$foth)
+```
+\paragraph{EDA:}
+```{r}
+summary(sample)
+
+#mother's age-- nice almost normal distribution
+hist(sample$mage, main = "Distribution of 'mage' Variable",
+     xlab = "Mother's Age (years)")
+
+#mother's education-- spikes at 12 and 16 years (HS and college), with some extreme low values
+#30 NAs
+hist(sample$meduc, main = "Distribution of 'meduc' Variable",
+     xlab = "Mother's Education (years)")
+
+#month prenatal care began-- nearly exponential distribution with spikes at 1 and 2 months
+#assuming this is the month of pregnancy.  given that there are fewer values above 3 months, we may want to break this up into indicator variables for the term that prenatal care began... i guess we'll see
+#5 NAs
+hist(sample$monpre, main = "Distribution of 'monpre' Variable",
+     xlab = "Month Prenatal Care Began")
+
+#number of prenatal visits-- normal with a spike at 12 visits and a long right tail
+#68 NAs
+hist(sample$npvis, main = "Distribution of 'npvis' Variable",
+     xlab = "Total Number of Prenatal Visits")
+
+#father's age-- almost normal with a positive skew
+#6 NAs
+hist(sample$fage, main = "Distribution of 'fage' Variable",
+     xlab = "Father's Age (years)")
+
+#father's education-- very similar to meduc (spikes at 12 and 16 years, with some extreme low values)
+hist(sample$feduc, main = "Distribution of 'feduc' Variable",
+     xlab = "Father's Education (years)")
+
+#birthweight-- almost normal with a negative skew
+hist(sample$bwght, main = "Distribution of 'bwght' Variable",
+     xlab = "Infant Birthweight (grams)")
+
+#one minute apgar score-- exponential, extreme negative skew with spikes at 8 and 9
+hist(sample$omaps, main = "Distribution of 'omaps' Variable",
+     xlab = "One Minute Apgar Score")
+
+#five minute apgar score-- extreme negative skew, mainly values of 9
+hist(sample$fmaps, main = "Distribution of 'fmaps' Variable",
+     xlab = "Five Minute Apgar Score")
+
+#cigs-- extreme positive skew, with mainly values of 0
+hist(sample$cigs, main = "Distribution of 'cigs' Variable",
+     xlab = "Average Cigarettes Per Day")
+
+#drinks-- pretty much all values of 0
+hist(sample$drink, main = "Distribution of 'drinks' Variable",
+     xlab = "Average Drinks Per Week")
+
+#lbw =1 if bwght <= 2000
+sum(sample$lbw == 0)#1802
+sum(sample$lbw == 1)#30
+
+#vlbw =1 if bwght <= 1500
+sum(sample$vlbw == 0)#1819
+sum(sample$vlbw == 1)#13
+
+#male =1 if baby male
+sum(sample$male == 0)#891
+sum(sample$male == 1)#941
+
+#mwhte =1 if mother white
+sum(sample$mwhte == 0)#208
+sum(sample$mwhte == 1)#1624
+
+#mblck =1 if mother black
+sum(sample$mblck == 0)#1723
+sum(sample$mblck == 1)#109
+
+#moth =1 if mother is other
+sum(sample$moth == 0)#1733
+sum(sample$moth == 1)#99
+
+#fwhte =1 if father white
+sum(sample$fwhte == 0)#202
+sum(sample$fwhte == 1)#1630
+
+#fblck =1 if father black
+sum(sample$fblck == 0)#1725
+sum(sample$fblck == 1)#107
+
+#foth =1 if father is other
+sum(sample$foth == 0)#1737
+sum(sample$foth == 1)#95
+
+#lbwght log(bwght)-- similar distribution as level bwght... why would we use a log transform
+hist(sample$lbwght, main = "Distribution of 'lbwght' Variable",
+     xlab = "log(bwght)")
+
+#magesq mage^2-- again, an almost normal distribution, but mage was already almost normal so why would we use this
+hist(sample$magesq, main = "Distribution of 'magesq' Variable",
+     xlab = "mage^2")
+
+#npvissq npvis^2-- exponential with positive skew... but npvis was already almost normal, so why would we do this?
+hist(sample$npvissq, main = "Distribution of 'npvissq' Variable",
+     xlab = "npvis^2")
+
+#mother's education vs. birthweight - seemingly a negative relationship but extreme values (such as really few years of education) are a very small part of the data set.
+#education vs avg bwght
+```{r}
+z = hist(sample$meduc)
+b = data.frame(cbind(z$breaks))
+colnames(b) = "education_years"
+
+sorting <- sapply(split(sample,sample$meduc), function(x) {
+  colMeans(x["bwght"],na.rm=TRUE)
+})
+
+bwght_by_meduc = data.frame(cbind(sorting))
+bwght_by_meduc = cbind(bwght_by_meduc, c(3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17))
+colnames(bwght_by_meduc)= c("average_birthweight", "education_years")
+
+a = merge(b, bwght_by_meduc, by.x = 1, by.y = 2, all.x = TRUE)
+a[is.na(a)] <-0
+
+plot(by(sample$bwght, sample$meduc, mean), xlab = "Years of Education" )
+plot(a$education_years, a$average_birthweight, ylim = seq(3000,4100,1000), xlab = "Years of Mothers' Education", 
+     ylab = "Average Birthweight", col = "red", lwd = 3)
+
+#mother's age vs bwght - looks like there is a concave exponential relationship
+mage_exp = data.frame(cbind(sample$mage, sample$bwght, sample$omaps, sample$fmaps))
+colnames(mage_exp) = c("Mother_age", "birthweight", "OMAPS", "FMAPS")
+summary(sample$mage)
+mage_exp$agebin <- cut(mage_exp$Mother_age, breaks = seq(15, 45, by = 5), 
+                       labels = c("15-20","21-25","26-30","31-35","36-40","41-45"))
+
+plot(by(mage_exp$birthweight,mage_exp$agebin, mean))
+axis(1, at =seq(1,6,1), labels = c("15-20","21-25","26-30","31-35","36-40","40-45"))
+
+#relationship between bwght and omaps
+z = plot(jitter(sample$omaps), jitter(sample$bwght))
+abline(lsfit(sample$omaps, sample$bwght))
+
+# looking at omaps vs # of visits - no strong trend
+avg_visits<- sapply(split(sample,sample$omaps), function(x) {
+  colMeans(x["npvis"],na.rm=TRUE)
+})
+barplot(avg_visits, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 20), xlab = "APGAR score", ylab = "Average visits")
+
+cor(sample$npvis, sample$omaps, use = "complete.obs")
+
+# looking at omaps vs # monpre- no strong trend
+avg_mon<- sapply(split(sample,sample$omaps), function(x) {
+  colMeans(x["monpre"],na.rm=TRUE)
+})
+barplot(avg_mon, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 4), xlab = "APGAR score", ylab = "Month pre-natal care starts")
+
+```
+
+## Model 1 \
+
+
+3. A minimum of three model specifications.  In particular, you should include
+
+- One model with only the explanatory variables of key interest.
+
+```{r}
+# #maybe save the race stuff for later
+# blackBaby = sample$mblck*sample$fblck
+# whiteBaby = sample$mwhte*sample$fwhte
+# bBabyWeight = sample$bwght[blackBaby == 1]
+# wBabyWeight = sample$bwght[whiteBaby == 1]
+# mean(bBabyWeight)
+# mean(wBabyWeight)
+# #hist(bBabyWeight)
+# #hist(wBabyWeight)
+
+# #data cleaning in progress
+# cleanData_1 = sample[(!is.na(sample$monpre)) & (!is.na(sample$cigs)) & (!is.na(sample$drink)),]
+# #the following are indicators we might want to use instead
+# latePre = factor(ifelse(cleanData_1$monpre>6, 1, 0))
+# earlyPre = factor(ifelse(cleanData_1$monpre<3, 1, 0))
+# #prenatal1 = factor(ifelse(cleanData_1$monpre==1, 1, 0))
+# prenatal2 = factor(ifelse(cleanData_1$monpre==2, 1, 0))
+# prenatal3 = factor(ifelse(cleanData_1$monpre==3, 1, 0))
+# prenatal4 = factor(ifelse(cleanData_1$monpre==4, 1, 0))
+# prenatal5 = factor(ifelse(cleanData_1$monpre==5, 1, 0))
+# prenatal6 = factor(ifelse(cleanData_1$monpre==6, 1, 0))
+# prenatal7 = factor(ifelse(cleanData_1$monpre==7, 1, 0))
+# prenatal8 = factor(ifelse(cleanData_1$monpre==8, 1, 0))
+# prenatal9 = factor(ifelse(cleanData_1$monpre==9, 1, 0))
+# #prenatalTri1 = factor(ifelse(cleanData_1$monpre < 4, 1, 0))
+# prenatalTri2 = factor(ifelse((cleanData_1$monpre > 3) & (cleanData_1$monpre < 7), 1, 0))
+# prenatalTri3 = factor(ifelse(cleanData_1$monpre > 6, 1, 0))
+# yesCigs = factor(ifelse(cleanData_1$cigs>0, 1, 0))
+# yesDrinks = factor(ifelse(cleanData_1$drink>0, 1, 0))
+# 
+# visitFreq = cleanData_1$npvis/(10-cleanData_1$monpre)
+
+#model_1 = lm(bwght ~ mage + magesq + cigs + drink + visitFreq, data = cleanData_1)
+#model_1_alt = lm(bwght ~ mage + cigs + monpre, data=sample)
+#model_1 = lm(bwght ~ mage + cigs + npvis, data=cleanData_1)
+#model_1 = lm(bwght ~ cigs + monpre, data = cleanData_1)
+#model_1 = lm(bwght ~ drink + npvis, data = cleanData_1)
+#model_1 = lm(bwght ~ cigs + npvis, data = cleanData_1)
+#model_1_alt2 = lm(bwght ~ mage, data=cleanData_1)
+#model_1 = lm(bwght ~ mage + npvis, data = cleanData_1)
+#model_1_alt3 = lm(bwght ~ mage + cigs, data=cleanData_1)
+#model_1 = lm(bwght ~ cigs, data=cleanData_1)
+#model_1 = lm(bwght ~ cigs + monpre, data=cleanData_1)
+#model_1 = lm(bwght ~ monpre, data=cleanData_1)#heteroskedasticity
+#model_1 = lm(bwght ~ npvis, data=cleanData_1)#heteroskedasticity
+#model_1 = lm
+
+model_1 = lm(bwght ~ mage + monpre, data=sample)
+summary(model_1)
+plot(model_1, which = 1)
+plot(model_1, which = 2)
+plot(model_1, which = 3)
+plot(model_1, which = 4)
+```
+
+## Baby health indicators
+So first I looked the two variables, $monpre$ and $npvis$ to see from exploratory analysis I could find any patterns. It wasn't clear from first glance at the data that there was a notable trend. \
+
+```{r}
+head(sample[order(sample$monpre, decreasing = T), ], 10)
+head(sample[sample$monpre == 9, ])
+```
+
+```{r}
+hist(sample$monpre)
+abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
+```
+```{r}
+hist(sample$npvis, breaks = 0:41 -.5, main = "Histogram of Number of Doctor Visits")
+abline(v = mean(sample$npvis, na.rm= TRUE), col="red", lwd=3, lty=2)
+```
+
+First, I thought about prenatal care as an dummy variable -- ie. is birthweight affected by whether the mother receive prenatal care or not? There is some difference in mean between the two groups - namely that babies that received no prenatal care had higher birthweights vs. those who did. \ 
+
+
+```{r}
+mean(sample$bwght[sample$npvis > 0]) 
+mean(sample$bwght[sample$npvis == 0])
+```
+However this data set actually has very few moms who received no prenatal care (n = 4) making this metric a less valuable one. \
+
+```{r}
+nrow(sample[sample$npvis == 0, ] )
+```
+
+As I looked deepper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So i attempted cut up a couple of different ways in an effort to minimize the skew. Namely I looked at visits per week and visits per month.  \
+
+Binning the visits variable (in this case I used visits per month) into quintiles which seemed to do the trick. Now you can see that there are signs that lower quintile visits (ie less frequent visits), could be correlated with lower birthweights and we know that this data isn't being skewed by 1 or 2 data points.\
+
+
+```{r}
+sample$visits_pr_mo = sample$npvis/(9 - (sample$monpre))
+sample$visits_pr_mo[sample$visits_pr_mo == Inf ] = 0
+summary(sample$visits_pr_mo)
+
+sample$visitsbin <- cut(sample$visits_pr_mo, breaks=c(quantile(sample$visits_pr_mo, probs = seq(0, 1, by = 0.20))), 
+                              labels=c("0-20","20-40","40-60","60-80", "80-100"), include.lowest=TRUE)
+plot(by(sample$bwght, sample$visitsbin, mean))
+```
+
+
+## Baby Race
+
+Almost 90% of the babies in the sample were white babies (n = 1420) while 5% were black (n = 83), and a little less than 5% other (n = 76). With the skew of the data in mind, race does seem to have some effect on baby birthweight at first glance of the data. In particular average birthweight gaps are the largest between "other" babies and "half white/half other" babies though admittedly the sample size of "half white/half other" babies is much smaller (n = 19). Further "other" babies appear to have the smallest birthweights of all the groupings. 
+
+```{r echo = FALSE}
+sample$blackbb = factor(ifelse(sample$mblck == '1' & sample$fblck == '1', 1, 0))
+sample$whitebb = factor(ifelse(sample$mwhte == '1' & sample$fwhte == '1', 1, 0))
+sample$halfblk_bb = factor(ifelse((sample$mwhte == '1' & sample$fblck == '1')|(sample$mblck == '1' & sample$fwhte =='1'), 1, 0))
+sample$otherbb = factor(ifelse(sample$moth == '1' & sample$foth == '1', 1, 0))
+sample$halfblk_oth_bb = factor(ifelse((sample$moth == '1' & sample$fblck == '1')|(sample$mblck == '1' & sample$foth =='1'), 1, 0))
+sample$halfwhte_oth_bb = factor(ifelse((sample$moth == '1' & sample$fwhte == '1')|(sample$mwhte == '1' & sample$foth =='1'), 1, 0))
+
+num_obs = c(nrow(sample[sample$blackbb == '1', ]), nrow(sample[sample$whitebb == '1', ]),
+      nrow(sample[sample$halfblk_bb == '1', ]), nrow(sample[sample$otherbb == '1', ]), 
+      nrow(sample[sample$halfblk_oth_bb == '1', ]), nrow(sample[sample$halfwhte_oth_bb == '1', ]))
+
+variable = c("sample$blackbb", "sample$whitebb", "sample$halfblk_bb", "sample$otherbb", 
+      "sample$halfblk_oth_bb", "sample$halfwhte_oth_bb")
+
+race = c("Black babies", "White babies", "Half black/half white babies", "Other babies", 
+      "Half black/half other babies", "Half white/half other babies")
+
+race_bwght = round(c(mean(sample$bwght[sample$blackbb == '1']), mean(sample$bwght[sample$whitebb == '1']),
+               mean(sample$bwght[sample$halfblk_bb == '1']), mean(sample$bwght[sample$otherbb == '1']),
+               mean(sample$bwght[sample$halfblk_oth_bb == '1']), mean(sample$bwght[sample$halfwhte_oth_bb == '1'])))
+```
+```{r}
+baby_races = data.frame(cbind(variable, race, num_obs, race_bwght))
+grid.table(baby_races)
+```
+
+## Model 2
+For model 2, we took the variables in model 1 and made a few additions. Namely, given the exploratory data analysis showed that "other" babies had far lower birth weights than other races, we added an indicator variable for race which = 1 if baby's race was "other" and =0 otherwise.  \
+
+
+We saw in the exploratory data analysis that visits per month has a concave, parabolic relationship with birthweight when binned into quintiles. Further we know that this variable is susceptible to outliers. As a result we made the following transformations:\
+
+
+\textbf{log}: all positive values and known zero point and there are outliers in the data. 
+
+\textbf{quadratic}: from binning the data we know that there is an decreasing effect on birthweight -- ie as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. \
+
+
+Similiarly birthweight appears ripe for log transformation as well given its right tail, all positive values, and a known zero point. As a result we transformed the dependent variable, birthweight, to log(birthweight) \
+
+
+Finally we also included a quadratic term for mother's age given early diagnostic plots which suggest a parabolic relationship there as well. \
+
+
+
+```{r}
+sample$logvis_mo = ifelse(sample$visits_pr_mo > 0, log(sample$visits_pr_mo), 0)
+sample$logvis_mo_sq = ifelse(sample$visits_pr_mo > 0, (log(sample$visits_pr_mo))^2, 0)
+````
+
+
+```{r}
+model2_3=  lm(lbwght ~ cigs + drink + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq, data = sample)
+summary(model2_3)
+vif(model2_3)
+plot(model2_3, which = 1)
+plot(model2_3, which = 2)
+plot(model2_3, which = 3)
+plot(model2_3, which = 5)
+```
+
+
