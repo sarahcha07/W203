@@ -22,7 +22,7 @@ Infant health can be measured by birth weight-- low birth weights are associated
 This set of background information forms the basis for three linear regression models that seek to explain the effects of prenatal care on infant health.
 
 ```{r setup, include=FALSE}
-setwd("/Users/sarahcha/Documents/W203/Lab_4")
+setwd("/Users/sarahcha/Documents/W203/")
 load("bwght_w203.RData")
 library(car)
 library(dplyr)
@@ -43,80 +43,110 @@ sample$fwhte = factor(sample$fwhte)
 sample$fblck= factor(sample$fblck)
 sample$foth = factor(sample$foth)
 ```
-\paragraph{EDA:}
-Our data set consists of 1612 complete observations and 23 variables that relate to characteristics of the parents (age, education, race), health of the infant (birthweight, APGAR score, and those that potential have some explanatory potential for infant health (number of prenatal hospital visits, month prenatal care began during pregnancy, average cigarettes a day, average drinks per week). Birthweight and APGAR within the data set offer insights on health outcomes for newborn infants. Naturally we care about their distribution and their relationship with other variables in the data set. 
+\paragraph{Exploratory Data Analysis:}
+Our data set consists of 1612 complete observations and 23 variables that relate to characteristics of the parents (age, education, race), health of the infant (birthweight, APGAR score), and those that potential have some explanatory potential for infant health (number of prenatal hospital visits, month prenatal care began during pregnancy, average cigarettes a day, average drinks per week). Birthweight and APGAR within the data set offer insights on health outcomes for newborn infants. Naturally we care about their distribution and their relationship with other variables in the data set. 
 
-We start off with a glance at all the variables in the data set. 
+We start off with a glance at all the variables in the data set. \
 
-```{r}
+```{r eval = FALSE}
 summary(sample)
 ```
-Our first plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' the one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9 though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (~9). \
 
 
-```{r}
-#birthweight-- almost normal with a negative skew
-par(mar=c(3,3,9,9),cex.axis=1,cex.lab=1)
-hist(sample$bwght, main = "Distribution of 'bwght' Variable",
-     xlab = "Infant Birthweight (grams)")
-abline(v = mean(sample$bwght, na.rm= TRUE), col="red", lwd=3, lty=2)
+Our initial plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' the one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9 though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (8-10). \
 
-#one minute apgar score-- exponential, extreme negative skew with spikes at 8 and 9
-hist(sample$omaps, main = "Distribution of 'omaps' Variable",
-     xlab = "One Minute Apgar Score")
-abline(v = mean(sample$omaps, na.rm= TRUE), col="pink", lwd=3, lty=2)
 
-#five minute apgar score-- extreme negative skew, mainly values of 9
-hist(sample$fmaps, main = "Distribution of 'fmaps' Variable",
-     xlab = "Five Minute Apgar Score")
+```{r echo = FALSE}
+par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.8)
+hist(sample$bwght, main ="", xlab = "", col = "blue", tcl = 0)
+title("Distribution of infant birthweight (in grams)", line = 0, cex.lab =0.5)
+abline(v = mean(sample$bwght, na.rm= TRUE), col="light blue", lwd=3, lty=2)
+```
+\
+
+
+```{r echo = FALSE}
+par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.8)
+hist(sample$omaps, main ="", xlab = "" ,breaks = 0:11 - 0.5, col = "pink", tcl = 0)
+title("Distribution of one minute APGAR score", line = 0, cex.lab =0.5)
+abline(v = mean(sample$omaps, na.rm= TRUE), col="red", lwd=3, lty=2)
+```
+\
+
+
+```{r echo = FALSE}
+par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.5)
+hist(sample$fmaps, main="", xlab = "", breaks = 0:11 -0.5, col = "light blue", tcl = 0)
+title("Distribution of Five Minute APGAR score", line = 0, cex.lab =0.8)
 abline(v = mean(sample$fmaps, na.rm= TRUE), col="blue", lwd=3, lty=2)
 ```
+ \
 
-```{r}
+
+We looked for insights on the smoking and alcoholic consumption behavior of the mothers in this sample. The average mom had 1 cigarette a day but over 90% of the 1612 women we looked at had zero cigarettes day. Unsurprisingly, analysis of histogram and box plot show that there are several outliers in the sample with one woman having 40 cigarettes a day. For alcoholic consumption, all but 16 women had no alcohol consumption which early on made us question whether this would be a useful variable to include in our statistical analysis later on. \
+
+
+```{r echo = FALSE}
 #Plot 1
 cigs_drinks = data.frame(cbind(sample$drink, sample$cigs))
 colnames(cigs_drinks) = c("Drinks", "Cigarettes")
 long <- melt(cigs_drinks)
 par(mar=c(5,5,7,7),cex.axis=1,cex.lab=1)
-plot(value ~ variable, data=long, horizontal = TRUE, xlab ="", yaxt ="n")
+plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
 axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis = .7)
 ```
+ \
+ 
 
-Next we look at our parents in the data set. Average mother and father ages are 29.5 and 31.8 years respectively. We notice the presence of several outlier variables (outside the upper whisker) for fathers' age. The quartile averages for parent education years appear similiar. Average education years for both mothers and fathers in this sample are just under 14 years. 
-```{r}
+Next we look at our parents in the data set. Average mother and father ages are 29.5 and 31.8 years respectively. We notice the presence of several outlier variables (outside the upper whisker) for fathers' age. Histograms for both mother and father ages appear to be approximately normal. The quartile averages for parent education years appear similiar. Average education years for both mothers and fathers in this sample are just under 14 years. \
+
+
+```{r echo = FALSE}
 #Plot 2
 parent_char = data.frame(cbind(sample$mage, sample$meduc, sample$fage, sample$feduc))
 colnames(parent_char)= c("Mother's age", "Mother's education", "Father's age", "Father's education")
 long <- melt(parent_char)
-par(mar=c(7,7,7,7),cex.axis=1,cex.lab=1)
-plot(value ~ variable, data=long, horizontal = TRUE, xlab ="", yaxt ="n")
+par(mar=c(7,7,7,3),cex.axis=1,cex.lab=0.7)
+plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
 axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, cex.axis = .7)
 ```
-Next we analyzed some of the health variables in the data set including number of prenatal visits, month prenatal care began, and the one and five minute APGAR scores. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% of the mothers beginning care at 3 months or earlier. \
+
+
+Next we analyzed some of the variables in the data set that could have explanatory potential on infant health including number of prenatal visits, month prenatal care began, and the one and five minute APGAR scores. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% of the mothers beginning care at 3 months or earlier. \
+
+
 ```{r}
 nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])
 nrow(sample[(sample$monpre <= 3), ])
 ```
 
-```{r}
-hist(sample$monpre)
+```{r echo = FALSE}
+par(mar=c(7,7,7,0))
+hist(sample$monpre, main="", col = "pink", xlab ="")
+title("Distribution of Month Prenatal care began (monpre)", line = 0, cex.lab =0.7)
 abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
 ```
-```{r}
-hist(sample$npvis, breaks = 0:41 -.5, main = "Histogram of Number of Doctor Visits")
-abline(v = mean(sample$npvis, na.rm= TRUE), col="red", lwd=3, lty=2)
+
+
+```{r echo = FALSE}
+par(mar=c(7,7,7,0))
+hist(sample$npvis, breaks = 0:41 -.5, main ="", col = "light blue", xlab = "", cex = 0.5)
+title(main = "Histogram of Number of Doctor Visits", line = 0, cex.lab =0.7)
+abline(v = mean(sample$npvis, na.rm= TRUE), col="blue", lwd=3, lty=2)
 ```
-```{r}
+
+
+```{r echo = FALSE}
 #Plot 3
 health_var = data.frame(cbind(sample$omaps, sample$fmaps, sample$monpre, sample$npvis))
 colnames(health_var)= c("One min APGAR score", "Five min APGAR score", "Month prenatal care began", "Number of prenatal visits")
 long <- melt(health_var)
-par(mar=c(10,7,6,6),cex.axis=1,cex.lab=1)
-plot(value ~ variable, data=long, horizontal = TRUE, xlab ="", yaxt ="n")
-axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .7)
+par(mar=c(8,11,6,3),cex.axis=1,cex.lab=1)
+plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="",yaxt ="n")
+axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
 ```
 
-Almost 90% of the babies in the sample were white babies (n = 1420) while 5% were black (n = 83), and a little less than 5% other (n = 76). With the skew of the data in mind, race does seem to have some effect on baby birthweight at first glance of the data. In particular average birthweight gaps are the largest between "other" babies and "half white/half other" babies though admittedly the sample size of "half white/half other" babies is much smaller (n = 19). Further "other" babies appear to have the smallest birthweights of all the groupings. 
+Lastly on race, almost 90% of the babies in the sample were white babies (n = 1420) while 5% were black (n = 83), and a little less than 5% other (n = 76). With the skew of the data in mind, race does seem to have some effect on baby birthweight at first glance of the data. In particular average birthweight gaps are the largest between "other" babies and "half white/half other" babies though admittedly the sample size of "half white/half other" babies is much smaller (n = 19). Further "other" babies appear to have the smallest birthweights of all the groupings. 
 
 ```{r echo = FALSE}
 sample$blackbb = factor(ifelse(sample$mblck == '1' & sample$fblck == '1', 1, 0))
@@ -140,8 +170,8 @@ race_bwght = round(c(mean(sample$bwght[sample$blackbb == '1']), mean(sample$bwgh
                mean(sample$bwght[sample$halfblk_bb == '1']), mean(sample$bwght[sample$otherbb == '1']),
                mean(sample$bwght[sample$halfblk_oth_bb == '1']), mean(sample$bwght[sample$halfwhte_oth_bb == '1'])))
 ```
-```{r}
-baby_races = data.frame(cbind(variable, race, num_obs, race_bwght))
+```{r echo = FALSE}
+baby_races = data.frame(cbind(race, num_obs, race_bwght))
 grid.table(baby_races)
 ```
 
@@ -149,22 +179,38 @@ grid.table(baby_races)
 Next, we looked at relationships between key variables in the data set, particularly relationship with variables in the data set and the potential outcome variables, birthweight and APGAR scores. \
 
 
-Birthweight and APGAR scores do show positive correlation in the data set: \
-```{r}
+Birthweight and APGAR scores do show some small positive correlation in the data set.  \
+
+
+```{r echo = FALSE}
 #relationship between bwght and omaps
-z = plot(jitter(sample$omaps), jitter(sample$bwght))
+par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.5)
+z = plot(jitter(sample$omaps), jitter(sample$bwght), main = "", xlab = "APGAR score", ylab = "Infant birthweight", cex.lab = 0.8)
+title(main = "Birthweight vs. APGAR score", line = 0.5, cex.lab = 0.6)
 abline(lsfit(sample$omaps, sample$bwght))
+```
+```{r}
 cor(sample$omaps, sample$bwght)
 ```
 
+ \
+
+
+\textbf{Birthweight vs. Parent education and age} \
 
 At initial glance mother's education appears negative correlated with birthweight but we notice that this is being skewed by very few data points for mothers with years of education less than 9 years. We do notice however that birthweight seems to have diminishing, concave exponential relationship with mother's age. \
 
 
-```{r}
-#education vs avg bwght
-par(mar=c(2,2,10,10),cex.axis=1,cex.lab=1)
-z = hist(sample$meduc)
+```{r echo = FALSE}
+#education histogram
+par(mar=c(3,3,8,0))
+z = hist(sample$meduc, xlab ="Years of education", main = "", col = "blue")
+title(main = "Mother's education", line = 0, cex.lab = 0.7)
+```
+\
+
+
+```{r echo = FALSE}
 b = data.frame(cbind(z$breaks))
 colnames(b) = "education_years"
 
@@ -177,23 +223,45 @@ colnames(bwght_by_meduc)= c("average_birthweight", "education_years")
 a = merge(b, bwght_by_meduc, by.x = 1, by.y = 2, all.x = TRUE)
 a[is.na(a)] <-0
 
-par(mar=c(2,2,10,10),cex.axis=1,cex.lab=1)
+par(mar=c(3,3,8,0))
 plot(a$education_years, a$average_birthweight, ylim = seq(3000,4100,1000), xlab = "Years of Mothers' Education", 
-     ylab = "Average Birthweight", main =" Birthweight vs. Mother's Education", col = "red", pch = 16)
+     ylab = "Average Birthweight", main="", col = "red", pch = 16)
+title(main ="Birthweight vs. Mother's Education", line = 0.5, cex =0.5)
 
 #mother's age vs bwght - looks like there is a concave exponential relationship
 mage_exp = data.frame(cbind(sample$mage, sample$bwght, sample$omaps, sample$fmaps))
 colnames(mage_exp) = c("Mother_age", "birthweight", "OMAPS", "FMAPS")
-summary(sample$mage)
 mage_exp$agebin <- cut(mage_exp$Mother_age, breaks = seq(15, 45, by = 5), 
                        labels = c("15-20","21-25","26-30","31-35","36-40","41-45"))
-
-plot(by(mage_exp$birthweight,mage_exp$agebin, mean), main = "Birthweight vs. Mother's age", xaxt = "n",pch = 16, col = "blue")
-axis(1, at =seq(1,6,1), labels = c("15-20","21-25","26-30","31-35","36-40","40-45"),xlab = "Mother's age", ylab ="Infant birthweight")
 ```
 
-#Birthweight vs. pre-natal care: \
 
+```{r echo = FALSE}
+par(mar=c(3,3,8,0))
+plot(by(mage_exp$birthweight,mage_exp$agebin, mean), main = "", xaxt = "n",pch = 16, col = "blue")
+title(main ="Birthweight vs. Mother's age", line = 0.5, cex =0.5)
+axis(1, at =seq(1,6,1), labels = c("15-20","21-25","26-30","31-35","36-40","40-45"),xlab = "Mother's age", ylab ="Infant birthweight")
+```
+ \
+
+Interestingly, we don't see the same pattern between father's age and infant birthweight. \
+
+
+```{r echo = FALSE}
+fage_exp = data.frame(cbind(sample$fage, sample$bwght, sample$omaps, sample$fmaps))
+colnames(fage_exp) = c("father_age", "birthweight", "OMAPS", "FMAPS")
+fage_exp$agebin <- cut(fage_exp$father_age, breaks = seq(15, 65, by = 5), 
+                       labels = c("15-20","21-25","26-30","31-35","36-40","40-45",
+                                  "46-50", "51-55", "56-60", "61-65"))
+par(mar=c(3,3,8,0))
+plot(by(fage_exp$birthweight,fage_exp$agebin, mean), main ="", xaxt = "n", pch = 16, col = "dark green")
+title(main ="Birthweight vs. Father's age", line = 0.5, cex =0.5)
+axis(1, at =seq(1,10,1), labels = c("15-20","21-25","26-30","31-35","36-40","40-45", "46-50", "51-55", "56-60", "61-65"),xlab = "Father's age", ylab ="Infant birthweight")
+```
+ \
+
+
+\textbf{Birthweight vs. pre-natal care:} \
 
 We compared birthweight other pre-natal care factors such as number of visits and month prenatal care began. It wasn't clear from first glance at the data that there was a notable trend. 
 
@@ -206,8 +274,31 @@ mean(sample$bwght[sample$npvis == 0])
 ```
 However this data set actually has very few moms who received no prenatal care (n = 4) making this metric a less valuable one. \
 
+As we looked deeper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So i attempted cut up a couple of different ways in an effort to minimize the skew. Namely I looked at visits per week and visits per month.  \
 
-```{r}
+Binning visits per month into quintiles showed signs that lower quintile visits (ie less frequent visits), could be correlated with lower birthweights and we know that this representation is less skewed by outliers. Further we see signs that there is an concave, exponential relationship between birthweight and monthly visits. Notably at higher visits, there is a diminishing relationship with infant birthweight. \
+
+
+```{r echo = FALSE}
+sample$visits_pr_mo = sample$npvis/(9 - (sample$monpre))
+sample$visits_pr_mo[sample$visits_pr_mo == Inf ] = 0
+summary(sample$visits_pr_mo)
+
+sample$visitsbin <- cut(sample$visits_pr_mo, breaks=c(quantile(sample$visits_pr_mo, probs = seq(0, 1, by = 0.20))), labels=c("0-20","20-40","40-60","60-80", "80-100"), include.lowest=TRUE)
+par(mar=c(2,2,8,2))
+plot(by(sample$bwght, sample$visitsbin, mean), xaxt ="n", xlab ="", ylab ="Average infant birthweight", pch = 16, col ="blue")
+title(main = "Infant Birthweight by Percentile of Prenatal Visits", line = 0.5, cex.lab = 0.7)
+axis(1, at =seq(1,5,1), labels = c("0-20","20-40","40-60","60-80","80-100"),xlab = "Percentile of prenatal visits", ylab ="Infant birthweight")
+```
+  \
+ 
+ 
+ 
+As it relates to the APGAR scores, we didn't find through exploratory data analysis a reason to believe that they might be highly correlated with number of prenatal visits or month prenatal care began. \
+
+
+
+```{r echo = FALSE}
 # looking at omaps vs # of visits - no strong trend
 avg_visits<- sapply(split(sample,sample$omaps), function(x) {
   colMeans(x["npvis"],na.rm=TRUE)
@@ -222,24 +313,6 @@ avg_mon<- sapply(split(sample,sample$omaps), function(x) {
   colMeans(x["monpre"],na.rm=TRUE)
 })
 barplot(avg_mon, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 4), xlab = "APGAR score", ylab = "Month pre-natal care starts")
-```
-
-
-As we looked deepper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So i attempted cut up a couple of different ways in an effort to minimize the skew. Namely I looked at visits per week and visits per month.  \
-
-Binning visits per month into quintiles showed signs that lower quintile visits (ie less frequent visits), could be correlated with lower birthweights and we know that this representation is less skewed by outliers. Further we see signs that there is an concave, exponential relationship between birthweight and monthly visits. Notably at higher visits, there is a diminishing relationship with infant birthweight. \
-
-
-```{r}
-sample$visits_pr_mo = sample$npvis/(9 - (sample$monpre))
-sample$visits_pr_mo[sample$visits_pr_mo == Inf ] = 0
-summary(sample$visits_pr_mo)
-
-sample$visitsbin <- cut(sample$visits_pr_mo, breaks=c(quantile(sample$visits_pr_mo, probs = seq(0, 1, by = 0.20))), 
-                              labels=c("0-20","20-40","40-60","60-80", "80-100"), include.lowest=TRUE)
-par(mar=c(2,2,10,10))
-plot(by(sample$bwght, sample$visitsbin, mean), xaxt ="n", yaxt ="n", xlab ="", ylab ="", pch = 16, col ="blue")
-axis(1,axis(1, at =seq(1,5,1), labels = c("0-20","20-40","40-60","60-80","80-100"),xlab = "Percentile of prenatal visits", ylab ="Infant birthweight") )
 ```
 
 ```{r eval = FALSE}
