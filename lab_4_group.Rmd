@@ -607,15 +607,32 @@ sum((sample$drink > 0)&(sample$cigs > 0))
 drankinANDsmokin = (sample$drink)*(sample$cigs)
 parentsWhite = (as.numeric(sample$mwhte))*(as.numeric(sample$fwhte))
 
+fHS = (factor(ifelse(((sample$feduc)>=12)&((sample$feduc<=16)), 1, 0)))
+fCollege = (factor(ifelse((sample$feduc>=16), 1, 0)))
+mHS = (factor(ifelse((sample$meduc>=12)&(sample$meduc<=16), 1, 0)))
+mCollege = (factor(ifelse((sample$meduc>=16), 1, 0)))
+
 #testing the interaction between cigs and drink
 # model_3 =  lm(lbwght ~ cigs + drankinANDsmokin + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
 # model_3b =  lm(lbwght ~ cigs + drankinANDsmokin+ logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
 
-#model 3 with dummy variable trap and multicollinearity due to lbw and vlbw
-#we should play around with omaps and fmaps more
-model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
-model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)#model 3 with the 'base condition' for baby race (white babies) removed, so that vif can be calculated
+# #model 3 with dummy variable trap and multicollinearity due to lbw and vlbw
+# #we should play around with omaps and fmaps more
+# model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
+# model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)#model 3 with the 'base condition' for baby race (white babies) removed, so that vif can be calculated
+
+# #testing indicators for mother's education level
+# model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
+# model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby race (white babies) removed, so that vif can be calculated
+
+#replacing race dummy variable trap with a gender dummy variable trap
+female = (factor(ifelse((sample$male==0), 1, 0)))
+model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
+model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
+
 summary(model_3)
 vif(model_3b)
 bptest(model_3)
 AIC(model_3)
+plot(model_3)
+```
