@@ -54,7 +54,7 @@ summary(sample)
 ```
 
 
-Our initial plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' Apgar scores are an ordinal variable as they represent a values from 0 to 10 where 10 is the best. They are a measure of the physical condition of a newborn and computed by adding points (0, 1, or 2) for heart rate, respiratory effort, muscle tone, response to stimulation, and skin coloration. the one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9 though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (9-10). \
+Our initial plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' Apgar scores are an ordinal variable as they represent a values from 0 to 10 where 10 is the best. They are a measure of the physical condition of a newborn and computed by adding points (0, 1, or 2) for heart rate, respiratory effort, muscle tone, response to stimulation, and skin coloration. The one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9, though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (9-10). \
 
 
 ```{r echo = FALSE}
@@ -121,15 +121,22 @@ title(main = "Histogram of Number of Doctor Visits", line = 0, cex.lab =0.7)
 abline(v = mean(sample$npvis, na.rm= TRUE), col="blue", lwd=3, lty=2)
 ```
 
+<!--Andrew's Comments: Not sure why we show APGAR scores in the plot below. Not sure it makes sense here. I have commented out the section that puts the APGAR scores in the boxplot. Feel free to reintroduce them if there is a good reason for including them-->
 
 ```{r echo = FALSE}
 #Plot 3
-health_var = data.frame(cbind(sample$omaps, sample$fmaps, sample$monpre, sample$npvis))
-colnames(health_var)= c("One min APGAR score", "Five min APGAR score", "Month prenatal care began", "Number of prenatal visits")
+#health_var = data.frame(cbind(sample$omaps, sample$fmaps, sample$monpre, sample$npvis))
+#colnames(health_var)= c("One min APGAR score", "Five min APGAR score", "Month prenatal care began", "Number of prenatal visits")
+health_var = data.frame(cbind(sample$monpre, sample$npvis))
+colnames(health_var)= c("Month prenatal care began", "Number of prenatal visits")
+
 long <- melt(health_var)
 par(mar=c(8,11,6,3),cex.axis=1,cex.lab=1)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="",yaxt ="n")
-axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
+#axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
+axis(2, at = c(1, 2), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
+
+
 ```
   \
 
@@ -152,7 +159,7 @@ axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis
 When we plot the cigarettes and drink variables against infant birthweight, we do see a slight linear relationship between smoking and birthweight. \
 
 
-```{eval = TRUE}
+```{r eval = TRUE}
 scatterplotMatrix(~bwght + cigs + drink, data = sample)
 ```
  \
