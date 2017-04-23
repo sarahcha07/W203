@@ -695,8 +695,7 @@ Lastly, we evaluate the diagnostic plots to check the remainder of the assumptio
 plot(model_3)
 ```
 
-#Regression summary 
-\ 
+#Regression summary \ 
 Find below a regression table summarizing the results of our 3 models including the coefficients, heteroskedascity-robust standard errors as well as significance (stars represent p-values of 0.05, 0.01, and 0.001 respectively). This shows that almost every single regressor in the later models, 2 and 3, is significant with the exception of 'college.' Having said that, statistical significance is not the same as practical significance. 
 
 Practical significance tells us the magnitude of the given effect and whether the observed effect is meaningful. For example interpretation of the 'mage' variable suggests that each 2.9 years of aging for the mother results in a 1% change in infant birthweight. This would seem to be practically significant. On the other hand, we see fmaps as being statistically significant in model 3 but is interpreted as a 2.6% change fmaps score equates to a 1% change in birthweight. It's unclear what the practical interpretation and significance of this is given fmaps scores can only be integers between 0 and 10 for a given newborn infant.  \
@@ -711,9 +710,9 @@ stargazer(model_1, model2, model_3, type = "text", omit.stat = "f",
           star.cutoffs = c(0.05, 0.01, 0.001))
 ```
   \
-
-
-
+  
+  
+  
 \textbf{Causal interpretation}\
 
 We have been interpreting this regression predictively, ie. for given values of the independent variables what does the fitted model tell us about the baby's birthweight? That said, causal interpretations of regression coefficients in our best-fit model can only be justified by relying on much stricter assumptions than are needed for predictive inference. \
@@ -726,9 +725,9 @@ Further to be a causal model relies on the assumption that birthweight has cause
 
 3. More than one baby at a time. Carrying more than 1 baby at a time has been shown to increase stress on the mother's body but is also typically associated with lower newborn birthweights. Excluding an indicator variable for more than 1 baby at a time likely presents an downward bias on the existing OLS estimates. 
 
-If we had a way to measure these terms for our model, we might then be able to assume that our error term is truely random. It is also worth pointing out that as it relates to our existing model and causal interpretation, some of the effect of prenatal care could be hidden by variables like mother's age and the indicator variable for high school and college education we included in Model 3.. We know that pregnant women over the age of 35 are labeled as "higher risk" and as such may be asked to come in for doctor's visits earlier and more frequently. Further, mothers who are more educated are more likely to be knowledgeable of the benefits of pre-natal care and opt in. We see that the addition of both of these variables into Model 3 has resulted in better fit but decreased the statistical significance of the pre-natal care variable 'visits_pr_mo'.  \
+If we had a way to measure these terms for our model, we might then be able to assume that our error term is truely random. It is also worth pointing out that as it relates to our existing model and causal interpretation, some of the effect of prenatal care could be hidden by variables like mother's age and the indicator variable for high school and college education we included in Model 3. We know that pregnant women over the age of 35 are labeled as "higher risk" and as such may be asked to come in for doctor's visits earlier and more frequently. Further, mothers who are more educated are more likely to be knowledgeable of the benefits of pre-natal care and opt in. We see that the addition of both of these variables into Model 3 has resulted in better fit but decreased the statistical significance of the pre-natal care variable 'visits_pr_mo'.  
 
-Finally in our discussion around causality, it is worth highlighting though that when we plot our independent variables against the model residuals, we find that the residuals appear unrelated to the values of the independent variables suggesting that we may be able to assume exogeneity. That said we know that exogeneity does not imply causality. Exogeneity is about whether OLS can correctly identify the beta coefficients while causality has stricter assumptions and is about whether manipulations to the regressors do not infludence the error term. 
+Finally in our discussion around causality, it is worth highlighting though that when we plot our independent variables against the model residuals, we find that the residuals appear unrelated to the values of the independent variables suggesting that we may be able to assume exogeneity. That said we know that exogeneity does not imply causality. Exogeneity is about whether OLS can correctly identify the beta coefficients while causality has stricter assumptions and is about whether manipulations to the regressors do not infludence the error term. \
 
 # Conclusion
 Our findings support the findings that prenatal care improves certain health outcomes of newborn infants, namely birthweight. Prenatal hospital visits per month was highly statistically significant (<0.001) in our regresional analysis. That said we know from our analysis that baby race and mother's age are also key significant predictors of birthweight. 
