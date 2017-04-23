@@ -597,7 +597,7 @@ shapiro.test(model2$residuals)
 The large sample size and the Central Limit Theorem again allow Model 2 to rely on OLS asymptotics despite the departure from normality demonstrated by its normal q-q plot, the histogram of residuals, and the Shapiro-Wilk test.
 
 Cook's distance remains small for every observation, so outliers are again of no concern.
-```{r, echo=False, eval=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 AIC(model2)
 ```
 The Akaike Information Criterion (AIC) for Model 2 is -900.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
@@ -641,7 +641,7 @@ Taking the below comment out. Via the T-Stats it does enhance the predictive pow
 
 -->
 
-```{r, echo=FALSE, eval=FALSE}
+```{r, echo=FALSE}
 #just some scrathwork here
 sum((sample$drink > 0)&(sample$cigs > 0))
 drankinANDsmokin = (sample$drink)*(sample$cigs)
@@ -685,24 +685,24 @@ bptest(model_3)
 The Breusch-Pagan test is significant at any level so we can reject the null hypothesis of constant variance. While the low p-value may be due to the large sample size, the level of significance indicates that we should use the 
 heteroskedasticity-robust Huber-White standard errors.
 
-Evaluating the AIC. The AIC for Model 3 is the lowest of the 3 models thus far, indiciting an improvement of fit over the prior 2 models.
+Evaluating the AIC. The AIC for Model 3 is the lowest of the 3 models thus far, indiciting an improvement of fit over the prior 2 models. \
 ```{r, echo=FALSE}
 AIC(model_3)
 ```
 
-
-Lastly, we evaluate the diagnostic plots to check the remainder of the assumptions.
+Lastly, we evaluate the diagnostic plots to check the remainder of the assumptions.  \
 ```{r, echo=FALSE}
 plot(model_3)
 ```
 
 #Regression summary 
-Find below a regression table summarizing the results of our 3 models including the coefficients, heteroskedascity-robust standard errors as well as significance (stars represent p-values of 0.05, 0.01, and 0.001 respectively). This shows that almost every single regressor in the later models, 2 and 3, is significant with the exception of 'college.' Having said that, statistical significance is not the same as practical significance. \
+\ 
+Find below a regression table summarizing the results of our 3 models including the coefficients, heteroskedascity-robust standard errors as well as significance (stars represent p-values of 0.05, 0.01, and 0.001 respectively). This shows that almost every single regressor in the later models, 2 and 3, is significant with the exception of 'college.' Having said that, statistical significance is not the same as practical significance. 
 
 Practical significance tells us the magnitude of the given effect and whether the observed effect is meaningful. For example interpretation of the 'mage' variable suggests that each 2.9 years of aging for the mother results in a 1% change in infant birthweight. This would seem to be practically significant. On the other hand, we see fmaps as being statistically significant in model 3 but is interpreted as a 2.6% change fmaps score equates to a 1% change in birthweight. It's unclear what the practical interpretation and significance of this is given fmaps scores can only be integers between 0 and 10 for a given newborn infant.  \
 
 
-```{r}
+```{r, echo=FALSE}
 se.model1 = sqrt(diag(vcovHC(model_1)))
 se.model2 = sqrt(diag(vcovHC(model2)))
 se.model3 = sqrt(diag(vcovHC(model_3)))
