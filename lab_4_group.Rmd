@@ -32,7 +32,7 @@ library(gridExtra)
 library(reshape2)
 library(stargazer)
 ```
-```{r echo = FALSE}
+```{r}
 sample = na.exclude(data, complete.cases(sample))
 sample$lbw = factor(sample$lbw)
 sample$vlbw = factor(sample$vlbw)
@@ -49,7 +49,7 @@ Our data set consists of 1612 complete observations and 23 variables that relate
 
 We start off with a glance at all the variables in the data set. \
 
-```{r echo=FALSE}
+```{r}
 summary(sample)
 ```
 
@@ -57,7 +57,7 @@ summary(sample)
 Our initial plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' Apgar scores are an ordinal variable as they represent a values from 0 to 10 where 10 is the best. They are a measure of the physical condition of a newborn and computed by adding points (0, 1, or 2) for heart rate, respiratory effort, muscle tone, response to stimulation, and skin coloration. The one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9, though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (9-10). \
 
 
-```{r echo = FALSE}
+```{r}
 par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.8)
 hist(sample$bwght, main ="", xlab = "", col = "blue", tcl = 0)
 title("Distribution of infant birthweight (in grams)", line = 0, cex.lab =0.5)
@@ -66,7 +66,7 @@ abline(v = mean(sample$bwght, na.rm= TRUE), col="light blue", lwd=3, lty=2)
 \
 
 
-```{r echo = FALSE}
+```{r}
 par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.8)
 hist(sample$omaps, main ="", xlab = "" ,breaks = 0:11 - 0.5, col = "pink", tcl = 0)
 title("Distribution of one minute APGAR score", line = 0, cex.lab =0.5)
@@ -75,7 +75,7 @@ abline(v = mean(sample$omaps, na.rm= TRUE), col="red", lwd=3, lty=2)
 \
 
 
-```{r echo = FALSE}
+```{r}
 par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.5)
 hist(sample$fmaps, main="", xlab = "", breaks = 0:11 -0.5, col = "light blue", tcl = 0)
 title("Distribution of Five Minute APGAR score", line = 0, cex.lab =0.8)
@@ -87,7 +87,7 @@ abline(v = mean(sample$fmaps, na.rm= TRUE), col="blue", lwd=3, lty=2)
 We started out by looking at the parents in our data set. Average mother and father ages are 29.5 and 31.8 years respectively. We notice the presence of several outlier variables (outside the upper whisker) for fathers' age. Histograms for both mother and father ages appear to be approximately normal. The quartile averages for parent education years appear similiar. Average education years for both mothers and fathers in this sample are just under 14 years. \
 
 
-```{r echo = FALSE}
+```{r}
 #Plot 2
 parent_char = data.frame(cbind(sample$mage, sample$meduc, sample$fage, sample$feduc))
 colnames(parent_char)= c("Mother's age", "Mother's education", "Father's age", "Father's education")
@@ -98,15 +98,9 @@ axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, ce
 ```
 
 
-Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% (n=1460) of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% (n=1448) of the mothers beginning care at 3 months or earlier. \
+Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% (n=`r nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])`) of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% (n=`r nrow(sample[(sample$monpre <= 3), ])`) of the mothers beginning care at 3 months or earlier. \
 
-
-```{r eval=FALSE, echo=FALSE}
-nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])
-nrow(sample[(sample$monpre <= 3), ])
-```
-
-```{r echo = FALSE}
+```{r}
 par(mar=c(7,7,7,0))
 hist(sample$monpre, main="", col = "pink", xlab ="")
 title("Distribution of Month Prenatal care began (monpre)", line = 0, cex.lab =0.7)
@@ -114,7 +108,7 @@ abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
 ```
 
 
-```{r echo = FALSE}
+```{r}
 par(mar=c(7,7,7,0))
 hist(sample$npvis, breaks = 0:41 -.5, main ="", col = "light blue", xlab = "", cex = 0.5)
 title(main = "Histogram of Number of Doctor Visits", line = 0, cex.lab =0.7)
@@ -123,7 +117,7 @@ abline(v = mean(sample$npvis, na.rm= TRUE), col="blue", lwd=3, lty=2)
 
 <!--Andrew's Comments: Not sure why we show APGAR scores in the plot below. Not sure it makes sense here. I have commented out the section that puts the APGAR scores in the boxplot. Feel free to reintroduce them if there is a good reason for including them-->
 
-```{r echo = FALSE}
+```{r}
 #Plot 3
 #health_var = data.frame(cbind(sample$omaps, sample$fmaps, sample$monpre, sample$npvis))
 #colnames(health_var)= c("One min APGAR score", "Five min APGAR score", "Month prenatal care began", "Number of prenatal visits")
@@ -144,7 +138,7 @@ axis(2, at = c(1, 2), labels = colnames(health_var), tcl = 0, las = 2, cex.axis 
 We looked for insights on the smoking and alcoholic consumption behavior of the mothers in this sample. The average mom had 1 cigarette a day but over 90% of the 1612 women we looked at had zero cigarettes a day. Unsurprisingly, analysis of histogram and box plot show that there are several outliers in the sample with one woman having reported smoking 40 cigarettes a day. On alcoholic consumption, all but 16 women had no alcohol consumption which made us question early on how useful of a variable it would be in explaining health outcomes for infant newborns and thus to include in our statistical analysis later on. \
 
 
-```{r echo = FALSE}
+```{r}
 #Plot 1
 cigs_drinks = data.frame(cbind(sample$drink, sample$cigs))
 colnames(cigs_drinks) = c("Drinks", "Cigarettes")
@@ -167,7 +161,7 @@ scatterplotMatrix(~bwght + cigs + drink, data = sample)
 
 Lastly on race, almost 90% of the babies in the sample were white babies (n = 1420) while 5% were black (n = 83), and a little less than 5% other (n = 76). With the skew of the data in mind, race does seem to have some effect on baby birthweight at first glance of the data. In particular average birthweight gaps are the largest between "other" babies and "half white/half other" babies though admittedly the sample size of "half white/half other" babies is much smaller (n = 19). Further "other" babies appear to have the smallest birthweights of all the groupings. 
 
-```{r echo = FALSE}
+```{r }
 sample$blackbb = factor(ifelse(sample$mblck == '1' & sample$fblck == '1', 1, 0))
 sample$whitebb = factor(ifelse(sample$mwhte == '1' & sample$fwhte == '1', 1, 0))
 sample$halfblk_bb = factor(ifelse((sample$mwhte == '1' & sample$fblck == '1')|(sample$mblck == '1' & sample$fwhte =='1'), 1, 0))
@@ -190,7 +184,7 @@ race_bwght = round(c(mean(sample$bwght[sample$blackbb == '1']), mean(sample$bwgh
                mean(sample$bwght[sample$halfblk_oth_bb == '1']), mean(sample$bwght[sample$halfwhte_oth_bb == '1'])))
 ```
 
-```{r echo = FALSE}
+```{r}
 baby_races = data.frame(cbind(race, num_obs, race_bwght))
 grid.table(baby_races)
 ```
@@ -203,7 +197,7 @@ Next, we looked at relationships between key variables in the data set, particul
 Birthweight and Apgar scores do show some small positive correlation in the data set.  \
 
 
-```{r echo = FALSE}
+```{r}
 #relationship between bwght and omaps
 par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.5)
 z = plot(jitter(sample$omaps), jitter(sample$bwght), main = "", xlab = "APGAR score", ylab = "Infant birthweight", cex.lab = 0.8)
@@ -211,7 +205,7 @@ title(main = "Birthweight vs. APGAR score", line = 0.5, cex.lab = 0.6)
 abline(lsfit(sample$omaps, sample$bwght))
 ```
 Correlation between OMAPS and BWGHT variables.
-```{r, echo = FALSE}
+```{r}
 cor(sample$omaps, sample$bwght)
 ```
 
@@ -223,7 +217,7 @@ cor(sample$omaps, sample$bwght)
 At initial glance mother's education appears negative correlated with birthweight but we notice that this is being skewed by very few data points for mothers with years of education less than 9 years. We do notice however that birthweight seems to have diminishing, concave exponential relationship with mother's age. \
 
 
-```{r echo = FALSE}
+```{r}
 #education histogram
 par(mar=c(3,3,8,0))
 z = hist(sample$meduc, xlab ="Years of education", main = "", col = "blue")
@@ -232,7 +226,7 @@ title(main = "Mother's education", line = 0, cex.lab = 0.7)
 \
 
 
-```{r echo = FALSE}
+```{r}
 b = data.frame(cbind(z$breaks))
 colnames(b) = "education_years"
 
@@ -258,7 +252,7 @@ mage_exp$agebin <- cut(mage_exp$Mother_age, breaks = seq(15, 45, by = 5),
 ```
 
 
-```{r echo = FALSE}
+```{r}
 par(mar=c(3,3,8,0))
 plot(by(mage_exp$birthweight,mage_exp$agebin, mean), main = "", xaxt = "n",pch = 16, col = "blue")
 title(main ="Birthweight vs. Mother's age", line = 0.5, cex =0.5)
@@ -269,7 +263,7 @@ axis(1, at =seq(1,6,1), labels = c("15-20","21-25","26-30","31-35","36-40","40-4
 Interestingly, we don't see the same pattern between father's age and infant birthweight. \
 
 
-```{r echo = FALSE}
+```{r}
 fage_exp = data.frame(cbind(sample$fage, sample$bwght, sample$omaps, sample$fmaps))
 colnames(fage_exp) = c("father_age", "birthweight", "OMAPS", "FMAPS")
 fage_exp$agebin <- cut(fage_exp$father_age, breaks = seq(15, 65, by = 5), 
@@ -302,7 +296,7 @@ As we looked deeper into both variables, both variables had outlier values (with
 Binning visits per month into quintiles showed signs that lower quintile visits (ie less frequent visits), could be correlated with lower birthweights and we know that this representation is less skewed by outliers. Further we see signs that there is an concave, exponential relationship between birthweight and monthly visits. Notably at higher visits, there is a diminishing relationship with infant birthweight. \
 
 
-```{r echo = FALSE}
+```{r}
 sample$visits_pr_mo = sample$npvis/(9 - (sample$monpre))
 sample$visits_pr_mo[sample$visits_pr_mo == Inf ] = 0
 summary(sample$visits_pr_mo)
@@ -322,7 +316,7 @@ As it relates to the Apgar scores, we didn't find through exploratory data analy
 
 
 
-```{r echo = FALSE}
+```{r}
 # looking at omaps vs # of visits - no strong trend
 avg_visits<- sapply(split(sample,sample$omaps), function(x) {
   colMeans(x["npvis"],na.rm=TRUE)
@@ -488,7 +482,9 @@ This study begins its analysis by characterizing a simple foundational model upo
 #model_1 = lm(bwght ~ monpre, data=cleanData_1)#heteroskedasticity
 #model_1 = lm(bwght ~ npvis, data=cleanData_1)#heteroskedasticity
 #model_1 = lm
+```
 
+```{r}
 model_1 = lm(bwght ~ mage + monpre, data=sample)
 summary(model_1)
 plot(model_1, which = 1)
@@ -499,7 +495,7 @@ plot(model_1, which = 4)
 
 \emph{Assumption 1: Linear Population Model}\
 The assumption of a linear population model is met since this model has been defined to be linear in its parameters.
-```{r, echo=FALSE}
+```{r}
 plot(model_1$fitted.values, (model_1$fitted.values + model_1$residuals), main = "Observed vs Fitted Values for Model 1", xlab = "Fitted", ylab = "Observed")
 ```
 Additionally, the observed vs predicted values plot for this model does not provide a strong indication of non-linearity.
@@ -562,13 +558,13 @@ For model 2, we took the 'male' variable in model 1 and built on from there with
 * \textbf{Mother's age:} Finally we also included a quadratic term for mother's age given early diagnostic plots which suggest a parabolic relationship there as well. 
 
 
-```{r echo=FALSE}
+```{r}
 sample$logvis_mo = ifelse(sample$visits_pr_mo > 0, log(sample$visits_pr_mo), 0)
 sample$logvis_mo_sq = ifelse(sample$visits_pr_mo > 0, (log(sample$visits_pr_mo))^2, 0)
 ```
 
 
-```{r echo=FALSE}
+```{r}
 model2=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq, data = sample)
 summary(model2)
 vif(model2)
@@ -623,17 +619,15 @@ bptest(model2)
 The Breush-Pagan test for Model 2 is highly significant, which indicates that heteroskedasticity is present.  However, it is unclear that this will be an issue since the very low p-value may again be due to the large sample size, and since the scale-location plot shows a flat smoothing curve in the bulk of data.  The heteroskedasticity-robust Huber-White standard errors will be used for this model due to the uncertainty surrounding violoation of the homoskedasticity assumption. \
 
 
-```{r, echo=FALSE}
+```{r}
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
 shapiro.test(model2$residuals)
 ```
 As mentioned above, the large sample size and the Central Limit Theorem again allow Model 2 to rely on OLS asymptotics despite the departure from normality demonstrated by its normal q-q plot, the histogram of residuals, and the Shapiro-Wilk test.
 
 Cook's distance remains small for every observation, so outliers are again of no concern.
-```{r, echo=FALSE, eval=FALSE}
-AIC(model2)
-```
-The Akaike Information Criterion (AIC) for Model 2 is -900.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
+
+The Akaike Information Criterion (AIC) for Model 2 is `r AIC(model2)`.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
 ```{r}
 residualsSquared2 = (model2$residuals)^2
 model2_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
@@ -659,21 +653,24 @@ The model is now presented, its assumptions will be assessed, and a discussion o
 
 The model: $log(bwght) = \beta_0 + \beta_1cigs + \beta_2log(vis_mo) + \beta_3(log(vis_mo))^2 + \beta_3vis\_mo\_35 + \beta_4otherbb + \beta_5female + \beta_6male + \beta_7mage + \beta_8magesq + \beta_9lbw + \beta_{10}vlbw + \beta_{11}fmaps + \beta_{12}mHS + \beta_{13}mCollege$
 
-```{r, echo=FALSE}
+<!--Andrew Comment: Kalvin pelase verify we can delete this part. Looks like all of this is covered in the next section -->
+```{r, echo=FALSE, eval=FALSE}
 #just some scrathwork here
 sum((sample$drink > 0)&(sample$cigs > 0))
 drankinANDsmokin = (sample$drink)*(sample$cigs)
 parentsWhite = (as.numeric(sample$mwhte))*(as.numeric(sample$fwhte))
 
-fHS = (factor(ifelse(((sample$feduc)>=12)&((sample$feduc<=16)), 1, 0)))
-fCollege = (factor(ifelse((sample$feduc>=16), 1, 0)))
-mHS = (factor(ifelse((sample$meduc>=12)&(sample$meduc<=16), 1, 0)))
-mCollege = (factor(ifelse((sample$meduc>=16), 1, 0)))
-
 #replacing race dummy variable trap with a gender dummy variable trap
 female = (factor(ifelse((sample$male==0), 1, 0)))
 model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
 model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
+```
+
+```{r}
+fHS = (factor(ifelse(((sample$feduc)>=12)&((sample$feduc<=16)), 1, 0)))
+fCollege = (factor(ifelse((sample$feduc>=16), 1, 0)))
+mHS = (factor(ifelse((sample$meduc>=12)&(sample$meduc<=16), 1, 0)))
+mCollege = (factor(ifelse((sample$meduc>=16), 1, 0)))
 
 #indicator term for mothers 35+
 mOver35 = as.numeric(factor(ifelse((sample$mage>=35), 1, 0))) - 1
@@ -705,28 +702,26 @@ plot(model_3$fitted.values, (model_3$fitted.values + model_3$residuals), main = 
 Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
 
 The sample has not changed for Model 2, so it is still considered to be random.
-```{r, echo=FALSE}
+```{r}
 vif(model_3b)
 ```
 The VIF shown is for a variation of model 3 that excludes the 'female' indicator variable since R is unable to perform a VIF calculation due to the perfect multicollinearity between 'female' and 'male', which will be discussed later.  The VIF is still low (<<4) for all variables in model 3 except for 'mage' and 'magesq', as observed in model 2.  Please refer to the discussion from model 2 for an explanation surrounding multicollinearity in the 'mage' and 'magesq' variables.
 
 The residuals vs fitted plot for Model 3 is difficult to interpret since data is clustered in three areas.  The curve tracking conditional mean shows some curvature, especially at lower fitted values-- it is likely that the zero-conditional mean assumption has been violated for model 3.  The width of residual values also seems to change across the fitted values, suggesting heteroskedasticity.  The scale-location plot confirms this observation since there is substantial curvature in its smoothing line.
-```{r, echo=FALSE}
+```{r}
 bptest(model_3)
 ```
 The Breusch-Pagan test is significant at any level, allowing the rejection of the null hypothesis of constant variance, and further supporting the observation of heteroskedasticity. While the large sample size may have contributed to the low p-value, the combined evidence indicates that the assumption of homoskedasticity is violated for model 3, and that the heteroskedasticity-robust Huber-White standard errors should again be used.
 
-```{r, echo=FALSE}
+```{r}
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
 shapiro.test(model2$residuals)
 ```
 The normal q-q plot, histogram of residuals, and highly significant Shapiro-Wilk test for model 3 again demonstrate a departure from normality, but as with the previous models, the large sample size and the Central Limit Theorem again allow Model 3 to rely on OLS asymptotics.
 
 Cook's distance remains small for every observation, so outliers are again of no concern in model 3.
-```{r, echo=FALSE, eval=FALSE}
-AIC(model_3)
-```
-The AIC for Model 3 is -1461.233, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
+
+The AIC for Model 3 is `r AIC(model_3)`, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
 ```{r}
 #really not sure if the RESET should be done here
 residualsSquared3 = (model_3$residuals)^2
