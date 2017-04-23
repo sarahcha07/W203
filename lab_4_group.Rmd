@@ -189,6 +189,7 @@ race_bwght = round(c(mean(sample$bwght[sample$blackbb == '1']), mean(sample$bwgh
                mean(sample$bwght[sample$halfblk_bb == '1']), mean(sample$bwght[sample$otherbb == '1']),
                mean(sample$bwght[sample$halfblk_oth_bb == '1']), mean(sample$bwght[sample$halfwhte_oth_bb == '1'])))
 ```
+
 ```{r echo = FALSE}
 baby_races = data.frame(cbind(race, num_obs, race_bwght))
 grid.table(baby_races)
@@ -209,7 +210,8 @@ z = plot(jitter(sample$omaps), jitter(sample$bwght), main = "", xlab = "APGAR sc
 title(main = "Birthweight vs. APGAR score", line = 0.5, cex.lab = 0.6)
 abline(lsfit(sample$omaps, sample$bwght))
 ```
-```{r}
+Correlation between OMAPS and BWGHT variables.
+```{r, echo = FALSE}
 cor(sample$omaps, sample$bwght)
 ```
 
