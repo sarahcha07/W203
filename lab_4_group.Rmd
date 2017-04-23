@@ -643,36 +643,21 @@ summary(model2_unrestricted)
 The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.
 
 # Model 3
-In Model 3, we expanded on our findings from model 2 to include more variables:
+A problematic model may also arise in the attempt to grapple with the complexities in the given data.  Motivations might include:
 
-1. Female - we added an indicator variable for 'Female' after having found 'Male' to be highly statistically significant in Model 2. 
+1. Infant race-- following the finding that the 'male' variable was highly statistically significant in Model 2, a sloppy researcher may add an indicator variable, 'female' (=1 if baby is female), in an attempt to increase the model accuracy further. 
 
-2. Indicator variables for 1) mothers who only graduated high school, and 2) mothers who graduated from college
+2. A theory that more educated mothers seek better prenatal care-- indicator variables for 1) mothers who only graduated high school ('mHS'), and 2) mothers who graduated from college ('mCollege') can be included in the model to allow for different effects based on education level.
 
-3. Indicator variables for low birthweights - 'lbw' = <2000 grams and 'vlbw' = < 1500 grams.
+3. Indicator variables that seem to predict low birthweights-- 'lbw' (=1 if birth weight <2000 grams) and 'vlbw' (=1 if birth weight <1500 grams).
 
-4. Infant Apgar score - 'fmaps' which we saw in our exploratory data analysis has a small positive correlation with birthweight. 
+4. The minor correlation between five-minute Apgar score, 'fmaps', and birthweight, which was observed in the exploratory data analysis.
 
-In doing so, we ran into the following issues which makes these additions problematic:
+5. The fact that mothers 35 years and older are considered high-risk and are recommended to seek more frequent prenatal care.  This requires a more complex term-- an interaction that allows the effect of prenatal care to differ for older mothers.  A careless research may include an interaction between an indicator variable representing mothers 35 and older and a metric variable representing the level form of prenatal visits per month, instead of the log form as is currently used.  In the following example, this interaction is represented by the variable 'vis_mo_35'.
 
-1. The 'Female' indicator variable has perfect collinearity with the 'Male' variable because the two terms add to 1. As a result statistical software packages like R won't even estimate the model as it is a clear violation of an MLR assumption. 
+The model is now presented, its assumptions will be assessed, and a discussion of its problematic variables will follow.
 
-2. We find statistical significance in the indicator variable for high school education. While this helps increase the fit of the model, we worry that this term could mask some of the causal effects of prenatal care which we will discuss later in the 'Causal Interpretation' section. 
-
-3. Adding two indicator variables for low birthweights is problematic for two reasons: 
-
-  + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping. 
-
-<!-- Andrew's Edit Proposed Changes -->
-  + Using independent variables that are calculated from the dependent variable is a violation of the linearity assumption. 
-
-<!-- Andrew's Edit
-
-Taking the below comment out. Via the T-Stats it does enhance the predictive power of the model, but is problematic for the linearity of the model.
-
-  + Including these terms makes doesn't enhance the predictive power of the model and makes it more difficult for the model to have any causal interpretation because we know that low birthweight does not cause lower levels of birthweight. 
-
--->
+The model: $log(bwght) = \beta_0 + \beta_1cigs + \beta_2log(vis_mo) + \beta_3(log(vis_mo))^2 + \beta_3vis\_mo\_35 + \beta_4otherbb + \beta_5female + \beta_6male + \beta_7mage + \beta_8magesq + \beta_9lbw + \beta_{10}vlbw + \beta_{11}fmaps + \beta_{12}mHS + \beta_{13}mCollege$
 
 ```{r, echo=FALSE}
 #just some scrathwork here
@@ -685,48 +670,83 @@ fCollege = (factor(ifelse((sample$feduc>=16), 1, 0)))
 mHS = (factor(ifelse((sample$meduc>=12)&(sample$meduc<=16), 1, 0)))
 mCollege = (factor(ifelse((sample$meduc>=16), 1, 0)))
 
-#testing the interaction between cigs and drink
-# model_3 =  lm(lbwght ~ cigs + drankinANDsmokin + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
-# model_3b =  lm(lbwght ~ cigs + drankinANDsmokin+ logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
-
-# #model 3 with dummy variable trap and multicollinearity due to lbw and vlbw
-# #we should play around with omaps and fmaps more
-# model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)
-# model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq+lbw+vlbw+fmaps, data = sample)#model 3 with the 'base condition' for baby race (white babies) removed, so that vif can be calculated
-
-# #testing indicators for mother's education level
-# model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + whitebb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
-# model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + blackbb + halfblk_bb + halfblk_oth_bb + halfwhte_oth_bb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby race (white babies) removed, so that vif can be calculated
-
 #replacing race dummy variable trap with a gender dummy variable trap
 female = (factor(ifelse((sample$male==0), 1, 0)))
 model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
 model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
 
+#indicator term for mothers 35+
+mOver35 = as.numeric(factor(ifelse((sample$mage>=35), 1, 0))) - 1
+
+#interaction-- mothers over 35 are high risk and should have more frequent visits
+#vis_mo_35 = mOver35*(sample$logvis_mo)
+vis_mo_35 = mOver35*(sample$visits_pr_mo)
+
+#
+female = (factor(ifelse((sample$male==0), 1, 0)))
+model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
+model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
+
 summary(model_3)
 ```
+\emph{Changes to the 6 Classical Linear Model Assumptions for Model 3}\
+\subparagraph{\emph{Diagnostic Plots for Model 3:}}
+```{r}
+plot(model_3, which = 1)
+plot(model_3, which = 2)
+plot(model_3, which = 3)
+plot(model_3, which = 5)
+```
 
-The VIF values for the new variables are all around 1 and thus do not indicate multicollinearity. For all other variables, please refer to the discussion from Model 2. 
+The assumption of a linear population is still met since this model has been defined to be linear in its parameters.
+```{r}
+plot(model_3$fitted.values, (model_3$fitted.values + model_3$residuals), main = "Observed vs Fitted Values for Model 3", xlab = "Fitted", ylab = "Observed")
+```
+Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
+
+The sample has not changed for Model 2, so it is still considered to be random.
 ```{r, echo=FALSE}
 vif(model_3b)
 ```
-  
-Next we look at the Breusch-Pagan test.  
+The VIF shown is for a variation of model 3 that excludes the 'female' indicator variable since R is unable to perform a VIF calculation due to the perfect multicollinearity between 'female' and 'male', which will be discussed later.  The VIF is still low (<<4) for all variables in model 3 except for 'mage' and 'magesq', as observed in model 2.  Please refer to the discussion from model 2 for an explanation surrounding multicollinearity in the 'mage' and 'magesq' variables.
+
+The residuals vs fitted plot for Model 3 is difficult to interpret since data is clustered in three areas.  The curve tracking conditional mean shows some curvature, especially at lower fitted values-- it is likely that the zero-conditional mean assumption has been violated for model 3.  The width of residual values also seems to change across the fitted values, suggesting heteroskedasticity.  The scale-location plot confirms this observation since there is substantial curvature in its smoothing line.
 ```{r, echo=FALSE}
 bptest(model_3)
 ```
-The Breusch-Pagan test is significant at any level so we can reject the null hypothesis of constant variance. While the low p-value may be due to the large sample size, the level of significance indicates that we should use the 
-heteroskedasticity-robust Huber-White standard errors.
+The Breusch-Pagan test is significant at any level, allowing the rejection of the null hypothesis of constant variance, and further supporting the observation of heteroskedasticity. While the large sample size may have contributed to the low p-value, the combined evidence indicates that the assumption of homoskedasticity is violated for model 3, and that the heteroskedasticity-robust Huber-White standard errors should again be used.
 
-Evaluating the AIC. The AIC for Model 3 is the lowest of the 3 models thus far, indiciting an improvement of fit over the prior 2 models. \
 ```{r, echo=FALSE}
+hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
+shapiro.test(model2$residuals)
+```
+The normal q-q plot, histogram of residuals, and highly significant Shapiro-Wilk test for model 3 again demonstrate a departure from normality, but as with the previous models, the large sample size and the Central Limit Theorem again allow Model 3 to rely on OLS asymptotics.
+
+Cook's distance remains small for every observation, so outliers are again of no concern in model 3.
+```{r, echo=FALSE, eval=FALSE}
 AIC(model_3)
 ```
-
-Lastly, we evaluate the diagnostic plots to check the remainder of the assumptions.  \
-```{r, echo=FALSE}
-plot(model_3)
+The AIC for Model 3 is -1461.233, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
+```{r}
+#really not sure if the RESET should be done here
+residualsSquared3 = (model_3$residuals)^2
+model_3_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege + residualsSquared3, data = sample)
+summary(model_3_unrestricted)
+#should also do secondary test for zero conditional mean assumption
 ```
+The regression specification error test continues to show that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 3 is still misspecified.
+
+\emph{The problems with Model 3:}
+
+1. The 'Female' indicator variable has perfect collinearity with the 'Male' variable because the two terms add to 1. As a result, statistical software packages like R won't even estimate the model as intended since it is a clear violation of an MLR assumption-- this is apparent in the result output of 'NA' for the coefficient on the 'male' variable.  This is called a 'dummy variable trap'.
+
+2. There is statistical significance in the indicator variable for mothers with a high school education. While this helps increase the fit of the model, it is very possible that this term absorbs some of the causal effect of prenatal care, since it is likely that mothers with adequate education have better knowledge regarding prenatal care.  This will be discussed further in the 'Causal Interpretation' section.
+
+3. Adding two indicator variables for low birthweights is problematic for multiple reasons: 
+
+  + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping.
+  + Since lbw and vlbw are calculated from the dependent variable, their use as explanatory variables ruins the ceteris paribus interpretation of the model coefficients.  Together, they set a different intercept for each weight range (0-1500, 1500-2000, and 2000+).  It is nonsensical to have separate intercepts for different weight ranges since the model is intended to explain what causes birth weight to go from one range to the next.  Furthermore, using independent variables that are calculated from the dependent variable is a violation of the linearity assumption.
+  + The separation of fitted values into three clusters, as shown in the diagnostic plots, demonstrates the problem of 'lbw' and 'vlbw' resulting in a separate estimation for each weight range, which is incorrect.
 
 #Regression summary \ 
 Find below a regression table summarizing the results of our 3 models including the coefficients, heteroskedascity-robust standard errors as well as significance (stars represent p-values of 0.05, 0.01, and 0.001 respectively). This shows that almost every single regressor in the later models, 2 and 3, is significant with the exception of 'college.' Having said that, statistical significance is not the same as practical significance. 
