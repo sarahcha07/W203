@@ -549,13 +549,13 @@ For model 2, we took the 'male' variable in model 1 and built on from there with
 * \textbf{Mother's age:} Finally we also included a quadratic term for mother's age given early diagnostic plots which suggest a parabolic relationship there as well. 
 
 
-```{r}
+```{r echo=FALSE}
 sample$logvis_mo = ifelse(sample$visits_pr_mo > 0, log(sample$visits_pr_mo), 0)
 sample$logvis_mo_sq = ifelse(sample$visits_pr_mo > 0, (log(sample$visits_pr_mo))^2, 0)
 ```
 
 
-```{r}
+```{r echo=FALSE}
 model2=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq, data = sample)
 summary(model2)
 vif(model2)
