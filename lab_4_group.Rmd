@@ -540,7 +540,7 @@ For model 2, we took the 'male' variable in model 1 and built on from there with
 
     + log: all positive values and known zero point and there are outliers in the data. 
 
-    + quadratic: from binning the data we know that there is an decreasing effect on   birthweight -- ie. as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. A
+    + quadratic: from binning the data we know that there is an decreasing effect on   birthweight -- ie. as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. 
 
 * \textbf{Baby race:} Given the exploratory data analysis showed that "other" babies had far lower birth weights than other races, we added an indicator variable for race which = 1 if baby's race was "other" and =0 otherwise.  
 
@@ -583,7 +583,7 @@ X2 = data.matrix(subset(sample, select=c("cigs", "logvis_mo", "logvis_mo_sq", "o
   \
   
 
-The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq' whose VIF was north of 80.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  This suggests multicollinearity in the model. However, this does not bias results, and does not affect interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq'. \
+The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq' whose VIF was north of 80.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  This suggests multicollinearity is present in this model. However, this does not bias results, and does not affect interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq'. \
 
 ```{r}
 vif(model2)
@@ -599,7 +599,7 @@ The Breush-Pagan test for Model 2 is highly significant, which indicates that he
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
 shapiro.test(model2$residuals)
 ```
-The large sample size and the Central Limit Theorem again allow Model 2 to rely on OLS asymptotics despite the departure from normality demonstrated by its normal q-q plot, the histogram of residuals, and the Shapiro-Wilk test.
+As mentioned above, the large sample size and the Central Limit Theorem again allow Model 2 to rely on OLS asymptotics despite the departure from normality demonstrated by its normal q-q plot, the histogram of residuals, and the Shapiro-Wilk test.
 
 Cook's distance remains small for every observation, so outliers are again of no concern.
 ```{r, echo=FALSE, eval=FALSE}
