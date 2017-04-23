@@ -58,7 +58,7 @@ Our initial plots show that birthweight is approximately normally distributed wi
 
 
 ```{r}
-par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.8)
+par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.8)
 hist(sample$bwght, main ="", xlab = "", col = "blue", tcl = 0)
 title("Distribution of infant birthweight (in grams)", line = 0, cex.lab =0.5)
 abline(v = mean(sample$bwght, na.rm= TRUE), col="light blue", lwd=3, lty=2)
@@ -67,7 +67,7 @@ abline(v = mean(sample$bwght, na.rm= TRUE), col="light blue", lwd=3, lty=2)
 
 
 ```{r}
-par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.8)
+par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.8)
 hist(sample$omaps, main ="", xlab = "" ,breaks = 0:11 - 0.5, col = "pink", tcl = 0)
 title("Distribution of one minute APGAR score", line = 0, cex.lab =0.5)
 abline(v = mean(sample$omaps, na.rm= TRUE), col="red", lwd=3, lty=2)
@@ -76,7 +76,7 @@ abline(v = mean(sample$omaps, na.rm= TRUE), col="red", lwd=3, lty=2)
 
 
 ```{r}
-par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.5)
+par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.5)
 hist(sample$fmaps, main="", xlab = "", breaks = 0:11 -0.5, col = "light blue", tcl = 0)
 title("Distribution of Five Minute APGAR score", line = 0, cex.lab =0.8)
 abline(v = mean(sample$fmaps, na.rm= TRUE), col="blue", lwd=3, lty=2)
@@ -92,7 +92,7 @@ We started out by looking at the parents in our data set. Average mother and fat
 parent_char = data.frame(cbind(sample$mage, sample$meduc, sample$fage, sample$feduc))
 colnames(parent_char)= c("Mother's age", "Mother's education", "Father's age", "Father's education")
 long <- melt(parent_char)
-par(mar=c(7,7,7,3),cex.axis=1,cex.lab=0.7)
+par(mar=c(7,7,8,3),cex.axis=1,cex.lab=0.7)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
 axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, cex.axis = .7)
 ```
@@ -101,7 +101,7 @@ axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, ce
 Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% (n=`r nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])`) of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% (n=`r nrow(sample[(sample$monpre <= 3), ])`) of the mothers beginning care at 3 months or earlier. \
 
 ```{r}
-par(mar=c(7,7,7,0))
+par(mar=c(7,7,8,0))
 hist(sample$monpre, main="", col = "pink", xlab ="")
 title("Distribution of Month Prenatal care began (monpre)", line = 0, cex.lab =0.7)
 abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
@@ -109,7 +109,7 @@ abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
 
 
 ```{r}
-par(mar=c(7,7,7,0))
+par(mar=c(7,7,8,0))
 hist(sample$npvis, breaks = 0:41 -.5, main ="", col = "light blue", xlab = "", cex = 0.5)
 title(main = "Histogram of Number of Doctor Visits", line = 0, cex.lab =0.7)
 abline(v = mean(sample$npvis, na.rm= TRUE), col="blue", lwd=3, lty=2)
@@ -125,7 +125,7 @@ health_var = data.frame(cbind(sample$monpre, sample$npvis))
 colnames(health_var)= c("Month prenatal care began", "Number of prenatal visits")
 
 long <- melt(health_var)
-par(mar=c(8,11,6,3),cex.axis=1,cex.lab=1)
+par(mar=c(8,11,8,3),cex.axis=1,cex.lab=1)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="",yaxt ="n")
 #axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
 axis(2, at = c(1, 2), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
@@ -143,7 +143,7 @@ We looked for insights on the smoking and alcoholic consumption behavior of the 
 cigs_drinks = data.frame(cbind(sample$drink, sample$cigs))
 colnames(cigs_drinks) = c("Drinks", "Cigarettes")
 long <- melt(cigs_drinks)
-par(mar=c(5,5,7,7),cex.axis=1,cex.lab=1)
+par(mar=c(5,5,8,7),cex.axis=1,cex.lab=1)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
 axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis = .7)
 ```
@@ -154,6 +154,7 @@ When we plot the cigarettes and drink variables against infant birthweight, we d
 
 
 ```{r eval = TRUE}
+par(mar=c(7,7,8,0))
 scatterplotMatrix(~bwght + cigs + drink, data = sample)
 ```
  \
@@ -199,16 +200,16 @@ Birthweight and Apgar scores do show some small positive correlation in the data
 
 ```{r}
 #relationship between bwght and omaps
-par(mar=c(6,6,6,3),cex.axis=1,cex.lab=0.5)
+par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.5)
 z = plot(jitter(sample$omaps), jitter(sample$bwght), main = "", xlab = "APGAR score", ylab = "Infant birthweight", cex.lab = 0.8)
 title(main = "Birthweight vs. APGAR score", line = 0.5, cex.lab = 0.6)
 abline(lsfit(sample$omaps, sample$bwght))
 ```
+\
 Correlation between OMAPS and BWGHT variables.
 ```{r}
 cor(sample$omaps, sample$bwght)
 ```
-
  \
 
 
@@ -219,7 +220,7 @@ At initial glance mother's education appears negative correlated with birthweigh
 
 ```{r}
 #education histogram
-par(mar=c(3,3,8,0))
+par(mar=c(3,3,10,0))
 z = hist(sample$meduc, xlab ="Years of education", main = "", col = "blue")
 title(main = "Mother's education", line = 0, cex.lab = 0.7)
 ```
@@ -321,7 +322,7 @@ As it relates to the Apgar scores, we didn't find through exploratory data analy
 avg_visits<- sapply(split(sample,sample$omaps), function(x) {
   colMeans(x["npvis"],na.rm=TRUE)
 })
-par(mar=c(8,8,5,5),cex.axis=1,cex.lab=1)
+par(mar=c(8,8,8,5),cex.axis=1,cex.lab=1)
 barplot(avg_visits, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 20), xlab = "APGAR score", ylab = "Average visits")
 
 cor(sample$npvis, sample$omaps, use = "complete.obs")
