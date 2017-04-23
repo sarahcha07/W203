@@ -574,7 +574,7 @@ plot(model2$fitted.values, (model2$fitted.values + model2$residuals), main = "Ob
 ```
  \
 
-Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
+Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity. \
 
 ```{r}
 X2 = data.matrix(subset(sample, select=c("cigs", "logvis_mo", "logvis_mo_sq", "otherbb", "male", "mage", "magesq")))
@@ -583,10 +583,19 @@ X2 = data.matrix(subset(sample, select=c("cigs", "logvis_mo", "logvis_mo_sq", "o
   \
   
 
-The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq' whose VIF was north of 80.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  This suggests multicollinearity is present in this model. However, this does not bias results, and does not affect interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq'. \
+The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq' whose VIF was north of 80.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  This suggests multicollinearity is present in this model. We can correct for this by either dropping the variables in question or increasing the sample size.  \
+
+To test whether inclusion of the 'magesq' term significantly improves fit, we used an F-test that is generalized for the usual F-test of overall significance but allows for heteroskedascity-robust errors.  The F-stat is 7.35 implying a high level of significance in the magesq term. This suggests that dropping the variable would increase residuals (SSR) and worsen fit. 
 
 ```{r}
-vif(model2)
+model2_rest = lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage, data = sample)
+linearHypothesis(model2, "magesq = 0", vcov = vcovHC)
+```
+
+Finally we highight that both under the restricted and original model 2 that includes the 'magesq' term the interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq', is unchanged. All variables in both models are significant (p-values < 0.05). Having said that, removing the magesq term will result in a downward bias on the variable 'mage' given the negative beta coefficient on 'magesq.'
+
+```{r}
+summary(model2_rest)
 ```
 
 ```{r}
@@ -724,11 +733,11 @@ We have been interpreting this regression predictively, ie. for given values of 
 
 Further to be a causal model relies on the assumption that birthweight has causes (which we think it does) but also that our model includes and measures all of the causal variables. Our model does not provide or include: 
 
-1. The health of the mother (though we do look at things like cigarettes smoked/drinks consumed which may shed some light). Heart defects, diabetes, kidney disease, and high levels of stress have all been linked to low baby birthweights. We could measure this by including a variable like mother's blood pressure. The omitted variable bias here is likely positive given the beta coefficient is most likely positive as higher levels of mother's blood pressure is likely to be negatively correlated with infant's birthweight more than offsetting the positive correlation of blood pressure with other variables in the regression including number of visits per month and cigarettes smoked. 
+1. The health of the mother (though we do look at things like cigarettes smoked/drinks consumed which may shed some light). Heart defects, diabetes, kidney disease, and high levels of stress have all been linked to low baby birthweights. We could measure this by including a variable like mother's blood pressure. The omitted variable bias is negative given the beta coefficient is most likely negative as higher levels of mother's blood pressure is likely to be negatively correlated with infant's birthweight while blood pressure is positively correlated with other variables in the model including number of visits per month and cigarettes smoked. 
 
-2. Premature births. We do not know at how many weeks the infants were born. Typically babies born ahead of the full 37 week of pregnancy have smaller birthweights than those carried to full term. We would expect the omitted variable bias in this case to also be positive (upward) as the beta coefficient is likely positive though weeks of pregnancy might be negatively correlated to smoking and number of hospital visits. 
+2. Premature births. We do not know at how many weeks the infants were born. Typically babies born ahead of the full 37 week of pregnancy have smaller birthweights than those carried to full term. We would expect the omitted variable bias in this case to be positive (upward) as the beta coefficient is likely positive. 
 
-3. More than one baby at a time. Carrying more than 1 baby at a time has been shown to increase stress on the mother's body but is also typically associated with lower newborn birthweights. Excluding an indicator variable for more than 1 baby at a time likely presents an downward bias on the existing OLS estimates. 
+3. More than one baby at a time. Carrying more than 1 baby at a time has been shown to increase stress on the mother's body but is also typically associated with lower newborn birthweights. Excluding an indicator variable for more than 1 baby at a time likely presents an negative bias on the existing OLS estimates. 
 
 If we had a way to measure these terms for our model, we might then be able to assume that our error term is truely random. It is also worth pointing out that as it relates to our existing model and causal interpretation, some of the effect of prenatal care could be hidden by variables like mother's age and the indicator variable for high school and college education we included in Model 3. We know that pregnant women over the age of 35 are labeled as "higher risk" and as such may be asked to come in for doctor's visits earlier and more frequently. Further, mothers who are more educated are more likely to be knowledgeable of the benefits of pre-natal care and opt in. We see that the addition of both of these variables into Model 3 has resulted in better fit but decreased the statistical significance of the pre-natal care variable 'visits_pr_mo'.  
 
