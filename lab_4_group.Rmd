@@ -101,7 +101,7 @@ axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, ce
 Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% (n=1460) of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% (n=1448) of the mothers beginning care at 3 months or earlier. \
 
 
-```{r eval=FALSE echo=FALSE}
+```{r eval=FALSE, echo=FALSE}
 nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])
 nrow(sample[(sample$monpre <= 3), ])
 ```
@@ -329,7 +329,7 @@ avg_mon<- sapply(split(sample,sample$omaps), function(x) {
 barplot(avg_mon, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 4), xlab = "APGAR score", ylab = "Month pre-natal care starts")
 ```
 
-```{r eval = FALSE echo=FALSE}
+```{r eval=FALSE, echo=FALSE}
 #mother's age-- nice almost normal distribution
 hist(sample$mage, main = "Distribution of 'mage' Variable",
      xlab = "Mother's Age (years)")
@@ -428,7 +428,7 @@ The given premises regarding infant health identify multiple other variables in 
 
 This study begins its analysis by characterizing a simple foundational model upon which deeper analysis can then be performed: $bwght = \beta_0 + \beta_1 mage + \beta_2 monpre + u$
 
-```{r}
+```{r, echo=FALSE}
 # #maybe save the race stuff for later
 # blackBaby = sample$mblck*sample$fblck
 # whiteBaby = sample$mwhte*sample$fwhte
@@ -486,7 +486,7 @@ plot(model_1, which = 4)
 
 \emph{Assumption 1: Linear Population Model}\
 The assumption of a linear population model is met since this model has been defined to be linear in its parameters.
-```{r}
+```{r, echo=FALSE}
 plot(model_1$fitted.values, (model_1$fitted.values + model_1$residuals), main = "Observed vs Fitted Values for Model 1", xlab = "Fitted", ylab = "Observed")
 ```
 Additionally, the observed vs predicted values plot for this model does not provide a strong indication of non-linearity.
@@ -536,11 +536,11 @@ The regression specification error test (RESET) shows that when adding the squar
 ## Model 2
 For model 2, we took the 'male' variable in model 1 and built on from there with these additions and transformations:
 
-* \textbf{Prenatal care:} Instead of including 'monpre' in its current form we transformed the variable to visits per month which we calculated as: npvis/(9 months - monpre). This is in-line with our working theory that starting prenatal care earlier on in the pregnancy and more regular visits to the doctor over the course of the pregnancy is positively correlated with good health outcomes for newborn infants. We saw in the exploratory data analysis that visits per month has a concave, parabolic relationship with birthweight when binned into quintiles. Further we know that this variable is susceptible to outliers. As a result we made the following additional transformations:
+* \textbf{Prenatal care:} Instead of including 'monpre' in its current form we transformed the variable to visits per month which we calculated as: npvis/(9 months - monpre). This is in-line with our working theory that starting prenatal care earlier on in the pregnancy and more regular visits to the doctor over the course of the pregnancy is positively correlated with good health outcomes for newborn infants. We saw in the exploratory data analysis that visits per month has a concave, parabolic relationship with birthweight when binned into quintiles. This makes intuitive sense as an increase in visits per month beyond a certain point could be the result of health complications.  Further we know that this variable is susceptible to outliers. As a result we made the following additional transformations:
 
     + log: all positive values and known zero point and there are outliers in the data. 
 
-    + quadratic: from binning the data we know that there is an decreasing effect on   birthweight -- ie. as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. 
+    + quadratic: from binning the data we know that there is an decreasing effect on   birthweight -- ie. as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. A
 
 * \textbf{Baby race:} Given the exploratory data analysis showed that "other" babies had far lower birth weights than other races, we added an indicator variable for race which = 1 if baby's race was "other" and =0 otherwise.  
 
@@ -552,7 +552,7 @@ For model 2, we took the 'male' variable in model 1 and built on from there with
 ```{r}
 sample$logvis_mo = ifelse(sample$visits_pr_mo > 0, log(sample$visits_pr_mo), 0)
 sample$logvis_mo_sq = ifelse(sample$visits_pr_mo > 0, (log(sample$visits_pr_mo))^2, 0)
-````
+```
 
 
 ```{r}
