@@ -630,7 +630,7 @@ In doing so, we ran into the following issues which makes these additions proble
 
   + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping. 
   
-  + Including these terms makes it more difficult for the model to increase the predictive power but also to have any causal interpretation because we know that low birthweight does not cause lower levels of birthweight. 
+  + Including these terms makes doesn't enhance the predictive power of the model and makes it more difficult for the model to have any causal interpretation because we know that low birthweight does not cause lower levels of birthweight. 
 
 
 
