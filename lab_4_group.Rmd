@@ -297,7 +297,7 @@ mean(sample$bwght[sample$npvis == 0])
 \
 However this data set actually has very few moms who received no prenatal care (n = 4) making this metric a less valuable one. 
 
-As we looked deeper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So i attempted cut up a couple of different ways in an effort to minimize the skew. Namely I looked at visits per week and visits per month.  
+As we looked deeper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So we attempted cut up a couple of different ways in an effort to minimize the skew. Namely we looked at visits per week and visits per month.  
 
 Binning visits per month into quintiles showed signs that lower quintile visits (ie less frequent visits), could be correlated with lower birthweights and we know that this representation is less skewed by outliers. Further we see signs that there is an concave, exponential relationship between birthweight and monthly visits. Notably at higher visits, there is a diminishing relationship with infant birthweight. \
 
