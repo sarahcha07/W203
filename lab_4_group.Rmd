@@ -592,7 +592,9 @@ X2 = data.matrix(subset(sample, select=c("cigs", "logvis_mo", "logvis_mo_sq", "o
 
 The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq' whose VIF was north of 80.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  This suggests multicollinearity is present in this model. We can correct for this by either dropping the variables in question or increasing the sample size.  \
 
-To test whether inclusion of the 'magesq' term significantly improves fit, we used an F-test that is generalized for the usual F-test of overall significance but allows for heteroskedascity-robust errors.  The F-stat is 7.35 implying a high level of significance in the magesq term. This suggests that dropping the variable would increase residuals (SSR) and worsen fit. 
+
+To test whether inclusion of the 'magesq' term significantly improves fit, we used an F-test that is generalized for the usual F-test of overall significance but allows for heteroskedascity-robust errors.  The F-stat is 7.35 implying a high level of significance in the magesq term. This suggests that dropping the variable would increase residuals (SSR) and worsen fit. \
+
 
 ```{r}
 model2_rest = lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage, data = sample)
@@ -601,7 +603,9 @@ linearHypothesis(model2, "magesq = 0", vcov = vcovHC)
 
 When we compare the residual standard errors of the two models, there is an uptick in the restricted model but only modestly so (from .1825 to .183) which would seem in favor to removing the 'magesq' term. \
 
-Finally we highight that both under the restricted and original model 2 that includes the 'magesq' term the interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq', is unchanged. All variables in both models are significant (p-values < 0.05). Having said that, removing the magesq term will result in a downward bias on the variable 'mage' given the negative beta coefficient on 'magesq' which we can see observe in the change in the coefficient of the 'mage' variable (0.002 vs 0.029 in the original model).
+
+Finally we highight that both under the restricted and original model 2 that includes the 'magesq' term the interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq', is unchanged. All variables in both models are significant (p-values < 0.05). Having said that, removing the magesq term will result in a downward bias on the variable 'mage' given the negative beta coefficient on 'magesq' which we can see observe in the change in the coefficient of the 'mage' variable (0.002 vs 0.029 in the original model). \
+
 
 ```{r}
 summary(model2_rest)
