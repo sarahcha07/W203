@@ -671,9 +671,22 @@ model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + female + male
 model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
 
 summary(model_3)
+```
+
+The VIF values for the new variables are all around 1 and thus do not indicate multicollinearity. For all other variables, please refer to the discussion from Model 2. 
+```{r, echo=FALSE}
 vif(model_3b)
+```
+  
+Next we look at the Breusch-Pagan test.  
+```{r, echo=FALSE}
 bptest(model_3)
+```
+The Breusch-Pagan test is significant at any level so we can reject the null hypothesis of constant variance. While the low p-value may be due to the large sample size, the level of significance indicates that we should use the heteroskedasticity-robust Huber-White standard errors.
+
 AIC(model_3)
+
+```{r, echo=FALSE}
 plot(model_3)
 ```
 
