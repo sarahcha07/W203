@@ -149,7 +149,7 @@ axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis
  \
  
  
-When we plot the cigarettes and drink variables against infant birthweight, we do see a a slight linear relationship between smoking and birthweight. \
+When we plot the cigarettes and drink variables against infant birthweight, we do see a slight linear relationship between smoking and birthweight. \
 
 
 ```{eval = TRUE}
