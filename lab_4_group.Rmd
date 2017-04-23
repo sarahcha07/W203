@@ -629,10 +629,16 @@ In doing so, we ran into the following issues which makes these additions proble
 3. Adding two indicator variables for low birthweights is problematic for two reasons: 
 
   + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping. 
-  
+
+  + 
+
+<!-- Andrew's Edit
+
+Taking the below comment out. Via the T-Stats it does enhance the predictive power of the model, but is problematic for the linearity of the model.
+
   + Including these terms makes doesn't enhance the predictive power of the model and makes it more difficult for the model to have any causal interpretation because we know that low birthweight does not cause lower levels of birthweight. 
 
-
+-->
 
 ```{r}
 #just some scrathwork here
