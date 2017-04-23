@@ -196,7 +196,7 @@ grid.table(baby_races)
 ```
   \
   
-
+<!--Andrew's Comment: Not sure I would discuss APGAR scores here. We've already done some EDA on it above and think if we mention that its an ordinal variable and this does not fit in as a dependent variable. We could then say that as a component of APGAR score is birthweight so we haven't included them in our intial models -->
 Next, we looked at relationships between key variables in the data set, particularly relationship with variables in the data set and the potential outcome variables, birthweight and Apgar scores. \
 
 
@@ -316,6 +316,7 @@ axis(1, at =seq(1,5,1), labels = c("0-20","20-40","40-60","60-80","80-100"),xlab
   \
  
  
+ <!--If we remove APGAR scores above we may want to remove this section discussing APGAR scores -->
  
 As it relates to the Apgar scores, we didn't find through exploratory data analysis a reason to believe that they might be highly correlated with number of prenatal visits or month prenatal care began. \
 
