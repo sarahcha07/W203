@@ -22,7 +22,7 @@ Infant health can be measured by birth weight-- low birth weights are associated
 This set of background information forms the basis for three linear regression models that seek to explain the effects of prenatal care on infant health.
 
 ```{r setup, include=FALSE}
-setwd("/Users/sarahcha/Documents/W203/")
+#setwd("/Users/sarahcha/Documents/W203/")
 load("bwght_w203.RData")
 library(car)
 library(dplyr)
@@ -49,7 +49,7 @@ Our data set consists of 1612 complete observations and 23 variables that relate
 
 We start off with a glance at all the variables in the data set. \
 
-```{r eval = FALSE}
+```{r echo=FALSE}
 summary(sample)
 ```
 
@@ -98,10 +98,10 @@ axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, ce
 ```
 
 
-Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% of the mothers beginning care at 3 months or earlier. \
+Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% (n=1460) of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% (n=1448) of the mothers beginning care at 3 months or earlier. \
 
 
-```{r}
+```{r eval=FALSE echo=FALSE}
 nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])
 nrow(sample[(sample$monpre <= 3), ])
 ```
