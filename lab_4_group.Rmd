@@ -316,7 +316,7 @@ axis(1, at =seq(1,5,1), labels = c("0-20","20-40","40-60","60-80","80-100"),xlab
   \
  
  
- <!--If we remove APGAR scores above we may want to remove this section discussing APGAR scores -->
+ <!--Andrew Comment: If we remove APGAR scores above we may want to remove this section discussing APGAR scores -->
  
 As it relates to the Apgar scores, we didn't find through exploratory data analysis a reason to believe that they might be highly correlated with number of prenatal visits or month prenatal care began. \
 
@@ -339,6 +339,8 @@ avg_mon<- sapply(split(sample,sample$omaps), function(x) {
 barplot(avg_mon, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 4), xlab = "APGAR score", ylab = "Month pre-natal care starts")
 ```
 
+
+<!--Andrew's Comments: Don't think we mean to include any of the analysis below as we give it no formal discussion. Looks like this was just some basic EDA. -->
 ```{r eval=FALSE, echo=FALSE}
 #mother's age-- nice almost normal distribution
 hist(sample$mage, main = "Distribution of 'mage' Variable",
@@ -427,12 +429,13 @@ hist(sample$npvissq, main = "Distribution of 'npvissq' Variable",
 ```
 
 ## Model 1 \
-<!--- Don't think we need to include this section any longer
+<!-- Andrew Comment: Don't think we need to include this section any longer
 3. A minimum of three model specifications.  In particular, you should include
 
 - One model with only the explanatory variables of key interest.
 -->
-The sample contains multiple variables related to infant health, including birth weight ('bwght'), one-minute APGAR score (omaps), five-minute APGAR score (fmaps), low birth weight ('lbw'), and very-low birth weight ('vlbw').  The purpose of the APGAR score is to determine if a newborn requires immediate medical attention, and background knowledge indicates that infant birth weight is highly indicative of future infant health, so the 'bwght' variable has thus been selected to operationalize the concept of 'infant health' in this preliminary model.  The 'lbw' and 'vlbw' variables are indicators that focus only on a small subset of infants, and a model that uses 'lbw' or 'vlbw' as its dependent variable requires an advanced form of analysis that will not be used in this study.
+
+The sample contains multiple variables related to infant health, including birth weight ('bwght'), one-minute APGAR score (omaps), five-minute APGAR score (fmaps), low birth weight ('lbw'), and very-low birth weight ('vlbw').  The purpose of the APGAR score is to determine if a newborn requires immediate medical attention, and background knowledge indicates that infant birth weight is highly indicative of future infant health, so the 'bwght' variable has thus been selected to operationalize the concept of 'infant health' in this preliminary model. <!-- Andrew Comment: Additionally, using APGAR scores are ordinal so using these as the dependent variable requires an advanced form of analysis that will not be used in this study. Additionally,-->  The 'lbw' and 'vlbw' variables are indicators that focus only on a small subset of infants, and a model that uses 'lbw' or 'vlbw' as its dependent variable requires an advanced form of analysis that will not be used in this study.
 
 The given premises regarding infant health identify multiple other variables in the sample that have strong explanatory potential for infant health, namely number of prenatal visits ('npvis'), the month of pregnancy prenatal care began ('monpre'), mother's age ('mage'), drinks per week ('drink'), and cigarettes per day ('cigs').  The sample additionally contains multiple indicator variables representing the race of the parents, including 'mwhte', 'mblck', 'moth', 'fwhte', 'fblck', and 'foth'.  These variables may also increase the explanatory ability of the model, given that a baby's race is related to its birth weight.
 
