@@ -328,7 +328,7 @@ avg_mon<- sapply(split(sample,sample$omaps), function(x) {
 barplot(avg_mon, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 4), xlab = "APGAR score", ylab = "Month pre-natal care starts")
 ```
 
-```{r eval = FALSE}
+```{r eval = FALSE echo=FALSE}
 #mother's age-- nice almost normal distribution
 hist(sample$mage, main = "Distribution of 'mage' Variable",
      xlab = "Mother's Age (years)")
