@@ -30,6 +30,7 @@ library(lmtest)
 library(sandwich)
 library(gridExtra)
 library(reshape2)
+library(stargazer)
 ```
 ```{r echo = FALSE}
 sample = na.exclude(data, complete.cases(sample))
@@ -53,7 +54,7 @@ summary(sample)
 ```
 
 
-Our initial plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' the one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9 though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (8-10). \
+Our initial plots show that birthweight is approximately normally distributed with a mean of 3415 grams. 'omaps' and 'fmaps,' Apgar scores are an ordinal variable as they represent a values from 0 to 10 where 10 is the best. They are a measure of the physical condition of a newborn and computed by adding points (0, 1, or 2) for heart rate, respiratory effort, muscle tone, response to stimulation, and skin coloration. the one minute and five minute APGAR scores respectively both have distributions with negative skew and medians of 9 though 'fmaps' has a slightly more pronounced skew suggesting that more 5-min APGAR scores are bunched up toward the high end of the scale (9-10). \
 
 
 ```{r echo = FALSE}
@@ -83,29 +84,7 @@ abline(v = mean(sample$fmaps, na.rm= TRUE), col="blue", lwd=3, lty=2)
  \
 
 
-We looked for insights on the smoking and alcoholic consumption behavior of the mothers in this sample. The average mom had 1 cigarette a day but over 90% of the 1612 women we looked at had zero cigarettes day. Unsurprisingly, analysis of histogram and box plot show that there are several outliers in the sample with one woman having 40 cigarettes a day. For alcoholic consumption, all but 16 women had no alcohol consumption which early on made us question whether this would be a useful variable to include in our statistical analysis later on. \
-
-
-```{r echo = FALSE}
-#Plot 1
-cigs_drinks = data.frame(cbind(sample$drink, sample$cigs))
-colnames(cigs_drinks) = c("Drinks", "Cigarettes")
-long <- melt(cigs_drinks)
-par(mar=c(5,5,7,7),cex.axis=1,cex.lab=1)
-plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
-axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis = .7)
-```
- \
- 
-When we plot the cigarettes and drink variables against infant birthweight, we do see a a slight linear relationship between smoking and birthweight. \
-
-
-```{echo = FALSE}
-scatterplotMatrix(~bwght + cigs + drink, data = sample)
-```
-
-
-Next we look at our parents in the data set. Average mother and father ages are 29.5 and 31.8 years respectively. We notice the presence of several outlier variables (outside the upper whisker) for fathers' age. Histograms for both mother and father ages appear to be approximately normal. The quartile averages for parent education years appear similiar. Average education years for both mothers and fathers in this sample are just under 14 years. \
+We started out by looking at the parents in our data set. Average mother and father ages are 29.5 and 31.8 years respectively. We notice the presence of several outlier variables (outside the upper whisker) for fathers' age. Histograms for both mother and father ages appear to be approximately normal. The quartile averages for parent education years appear similiar. Average education years for both mothers and fathers in this sample are just under 14 years. \
 
 
 ```{r echo = FALSE}
@@ -119,7 +98,7 @@ axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, ce
 ```
 
 
-Next we analyzed some of the variables in the data set that could have explanatory potential on infant health including number of prenatal visits, month prenatal care began, and the one and five minute APGAR scores. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% of the mothers beginning care at 3 months or earlier. \
+Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% of the mothers beginning care at 3 months or earlier. \
 
 
 ```{r}
@@ -152,6 +131,32 @@ par(mar=c(8,11,6,3),cex.axis=1,cex.lab=1)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="",yaxt ="n")
 axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
 ```
+  \
+
+
+We looked for insights on the smoking and alcoholic consumption behavior of the mothers in this sample. The average mom had 1 cigarette a day but over 90% of the 1612 women we looked at had zero cigarettes a day. Unsurprisingly, analysis of histogram and box plot show that there are several outliers in the sample with one woman having reported smoking 40 cigarettes a day. On alcoholic consumption, all but 16 women had no alcohol consumption which made us question early on how useful of a variable it would be in explaining health outcomes for infant newborns and thus to include in our statistical analysis later on. \
+
+
+```{r echo = FALSE}
+#Plot 1
+cigs_drinks = data.frame(cbind(sample$drink, sample$cigs))
+colnames(cigs_drinks) = c("Drinks", "Cigarettes")
+long <- melt(cigs_drinks)
+par(mar=c(5,5,7,7),cex.axis=1,cex.lab=1)
+plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
+axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis = .7)
+```
+ \
+ 
+ 
+When we plot the cigarettes and drink variables against infant birthweight, we do see a a slight linear relationship between smoking and birthweight. \
+
+
+```{eval = TRUE}
+scatterplotMatrix(~bwght + cigs + drink, data = sample)
+```
+ \
+
 
 Lastly on race, almost 90% of the babies in the sample were white babies (n = 1420) while 5% were black (n = 83), and a little less than 5% other (n = 76). With the skew of the data in mind, race does seem to have some effect on baby birthweight at first glance of the data. In particular average birthweight gaps are the largest between "other" babies and "half white/half other" babies though admittedly the sample size of "half white/half other" babies is much smaller (n = 19). Further "other" babies appear to have the smallest birthweights of all the groupings. 
 
@@ -181,12 +186,13 @@ race_bwght = round(c(mean(sample$bwght[sample$blackbb == '1']), mean(sample$bwgh
 baby_races = data.frame(cbind(race, num_obs, race_bwght))
 grid.table(baby_races)
 ```
+  \
+  
+
+Next, we looked at relationships between key variables in the data set, particularly relationship with variables in the data set and the potential outcome variables, birthweight and Apgar scores. \
 
 
-Next, we looked at relationships between key variables in the data set, particularly relationship with variables in the data set and the potential outcome variables, birthweight and APGAR scores. \
-
-
-Birthweight and APGAR scores do show some small positive correlation in the data set.  \
+Birthweight and Apgar scores do show some small positive correlation in the data set.  \
 
 
 ```{r echo = FALSE}
@@ -268,11 +274,11 @@ axis(1, at =seq(1,10,1), labels = c("15-20","21-25","26-30","31-35","36-40","40-
  \
 
 
-\textbf{Birthweight vs. pre-natal care:} \
+\textbf{Birthweight and Apgar scores vs. pre-natal care:} \
 
 We compared birthweight other pre-natal care factors such as number of visits and month prenatal care began. It wasn't clear from first glance at the data that there was a notable trend. 
 
-We wanted to first understand if birthweight was correlated with whether the mothers received prenatal care or not? There is some difference in mean between the two groups - namely that babies that received no prenatal care had higher birthweights vs. those who did. \ 
+We wanted to first understand if birthweight was correlated with whether the mothers received prenatal care at all or not.  There is some difference in mean between the two groups - namely that babies that received no prenatal care had higher birthweights vs. those who did. \ 
 
 
 ```{r}
@@ -301,7 +307,7 @@ axis(1, at =seq(1,5,1), labels = c("0-20","20-40","40-60","60-80","80-100"),xlab
  
  
  
-As it relates to the APGAR scores, we didn't find through exploratory data analysis a reason to believe that they might be highly correlated with number of prenatal visits or month prenatal care began. \
+As it relates to the Apgar scores, we didn't find through exploratory data analysis a reason to believe that they might be highly correlated with number of prenatal visits or month prenatal care began. \
 
 
 
@@ -528,17 +534,17 @@ summary(model_1_unrestricted)
 The regression specification error test (RESET) shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant.  This suggests that the model is actually misspecified.
 
 ## Model 2
-For model 2, we took the 'male' variable in model 1 and made a few edits:
+For model 2, we took the 'male' variable in model 1 and built on from there with these additions and transformations:
 
-* \textbf{Prenatal care:} Instead of including 'monpre' in its current form we included visits per month which we calculated as: npvis/(9 months - monpre). We saw in the exploratory data analysis that visits per month has a concave, parabolic relationship with birthweight when binned into quintiles. Further we know that this variable is susceptible to outliers. As a result we made the following transformations:
+* \textbf{Prenatal care:} Instead of including 'monpre' in its current form we transformed the variable to visits per month which we calculated as: npvis/(9 months - monpre). This is in-line with our working theory that starting prenatal care earlier on in the pregnancy and more regular visits to the doctor over the course of the pregnancy is positively correlated with good health outcomes for newborn infants. We saw in the exploratory data analysis that visits per month has a concave, parabolic relationship with birthweight when binned into quintiles. Further we know that this variable is susceptible to outliers. As a result we made the following additional transformations:
 
     + log: all positive values and known zero point and there are outliers in the data. 
 
-    + quadratic: from binning the data we know that there is an decreasing effect on   birthweight -- ie as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. 
+    + quadratic: from binning the data we know that there is an decreasing effect on   birthweight -- ie. as number of visits reaches high levels (5th quintile), there is a decreasing relationship with birthweight. 
 
 * \textbf{Baby race:} Given the exploratory data analysis showed that "other" babies had far lower birth weights than other races, we added an indicator variable for race which = 1 if baby's race was "other" and =0 otherwise.  
 
-* \textbf{Birthweight:}Similiarly birthweight appears ripe for log transformation as well given its right tail, all positive values, and a known zero point. As a result we transformed the dependent variable, birthweight, to log(birthweight) 
+* \textbf{Birthweight:} Similiarly birthweight appears ripe for log transformation as well given its right tail, all positive values, and a known zero point. As a result we transformed the dependent variable, birthweight, to log(birthweight) 
 
 * \textbf{Mother's age:} Finally we also included a quadratic term for mother's age given early diagnostic plots which suggest a parabolic relationship there as well. 
 
@@ -564,6 +570,9 @@ The assumption of a linear population is still met since this model has been def
 ```{r}
 plot(model2$fitted.values, (model2$fitted.values + model2$residuals), main = "Observed vs Fitted Values for Model 2", xlab = "Fitted", ylab = "Observed")
 ```
+\
+
+
 Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
 
 The sample has not changed for Model 2, so it is still considered to be random.
@@ -601,6 +610,8 @@ summary(model2_unrestricted)
 The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.
 
 # Model 3
+
+
 ```{r}
 #just some scrathwork here
 sum((sample$drink > 0)&(sample$cigs > 0))
@@ -636,3 +647,35 @@ bptest(model_3)
 AIC(model_3)
 plot(model_3)
 ```
+
+#Regression summary
+```{r}
+se.model1 = sqrt(diag(vcovHC(model_1)))
+se.model2 = sqrt(diag(vcovHC(model2)))
+se.model3 = sqrt(diag(vcovHC(model_3)))
+stargazer(model_1, model2, model_3, type = "text", omit.stat = "f",
+          se = list(se.model1, se.model2, se.model3),
+          star.cutoffs = c(0.05, 0.01, 0.001))
+```
+
+
+\textbf{Causal interpretation}\
+
+We have been interpreting this regression predictively, ie. for given values of the independent variables what does the fitted model tell us about the baby's birthweight? That said, causal interpretations of regression coefficients in our best-fit model, Model 2, can only be justified by relying on much stricter assumptions than are needed for predictive inference. \
+
+Further to be a causal model relies on the assumption that birthweight has causes (which we think it does) but also that our model includes and measures all of the causal variables. Our model does not provide or include: \
+
+1. The health of the mother (though we do look at things like cigarettes smoked/drinks consumed which may shed some light). Heart defects, diabetes, kidney disease, and high levels of stress have all been linked to low baby birthweights. We could measure this by including a variable like mother's blood pressure. The omitted variable bias here is unclear given the beta coefficient is likely positive as higher levels of mother's blood pressure is likely to be negatively correlated with infant's birthweight more than offsetting the positive correlation between other variables in the regression including number of visits per month and cigarettes smoked. 
+
+2. Premature births. We do not know at how many weeks the infants were born. Typically babies born ahead of the full 37 week of pregnancy have smaller birthweights than those carried to full term. We would expect the omitted variable bias in this case to also be positive (upward) as the beta coefficient is likely positive though weeks of pregnancy might be negatively correlated to smoking and number of hospital visits. 
+
+3. More than one baby at a time. In addition, carrying more than 1 baby at a time is shown to increase stress on the mother's body but also typically carries lower birthweights. Excluding an indicator variable for more than 1 baby at a time likely presents an downward bias on the existing OLS estimates. 
+
+
+If we had a way to measure these terms for our model, we might then be able to assume that our error term is truely random. It is also worth pointing out that as it relates to our existing model, 'cig' and 'mage' could be absorbing some of the causal effect of prenatal care given XXXXXXXX. \
+
+It is worth highlighting though that when we plot our independent variables against the model residuals, we find that the residuals appear unrelated to the values of the independent variables suggesting that we may be able to assume exogeneity. That said we know that exogeneity does not imply causality. Exogeneity is about whether OLS can correctly identify the beta coefficients while causality has stricter assumptions and is about whether manipulations to the regressors do not infludence the error term. \
+
+
+# Conclusion
+Our findings support the findings that prenatal care improves certain health outcomes of newborn infants, namely birthweight. Prenatal hospital visits per month was highly statistically significant (<0.001) in our regresional analysis. That said we know from our analysis that baby race and mother's age are also key significant predictors of birthweight. 
