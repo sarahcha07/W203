@@ -630,7 +630,8 @@ In doing so, we ran into the following issues which makes these additions proble
 
   + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping. 
 
-  + 
+<!-- Andrew's Edit Proposed Changes -->
+  + Using independent variables that are calculated from the dependent variable is a violation of the linearity assumption. 
 
 <!-- Andrew's Edit
 
@@ -640,7 +641,7 @@ Taking the below comment out. Via the T-Stats it does enhance the predictive pow
 
 -->
 
-```{r}
+```{r, echo=FALSE, eval=FALSE}
 #just some scrathwork here
 sum((sample$drink > 0)&(sample$cigs > 0))
 drankinANDsmokin = (sample$drink)*(sample$cigs)
