@@ -590,7 +590,7 @@ bptest(model2)
 ```
 The Breush-Pagan test for Model 2 is highly significant, which indicates that heteroskedasticity is present.  However, it is unclear that this will be an issue since the very low p-value may again be due to the large sample size, and since the scale-location plot shows a flat smoothing curve in the bulk of data.  The heteroskedasticity-robust Huber-White standard errors will be used for this model due to the uncertainty surrounding violoation of the homoskedasticity assumption.
 
-```{r}
+```{r, echo=FALSE}
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
 shapiro.test(model2$residuals)
 ```
