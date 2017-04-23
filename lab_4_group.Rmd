@@ -566,29 +566,34 @@ plot(model2, which = 5)
 ```
 
 \emph{Changes to the 6 Classical Linear Model Assumptions for Model 2:}\
+We see signs of potential bias in Model 2 relative to Model 1 in looking at the diagnostic plots. Linearity and random sampling are still met while there are potential violations of multicollinearity, heteroskedascity, and normal distribution though we are least concerned with the latter given the large sample. The residuals vs fitted plot for Model 2 shows some curvature, but is reasonably flat in the bulk of the data, so the zero-conditional mean assumption still holds.
+
 The assumption of a linear population is still met since this model has been defined to be linear in its parameters.
 ```{r}
 plot(model2$fitted.values, (model2$fitted.values + model2$residuals), main = "Observed vs Fitted Values for Model 2", xlab = "Fitted", ylab = "Observed")
 ```
-\
-
+ \
 
 Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
-
-The sample has not changed for Model 2, so it is still considered to be random.
 
 ```{r}
 X2 = data.matrix(subset(sample, select=c("cigs", "logvis_mo", "logvis_mo_sq", "otherbb", "male", "mage", "magesq")))
 (Cor = cor(X2))
 ```
-The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq'.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  However, this does not bias results, and does not affect interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq'.
+  \
+  
 
-The residuals vs fitted plot for Model 2 shows some curvature, but is reasonably flat in the bulk of the data, so the zero-conditional mean assumption still holds.
+The VIF is low (<<4) for all variables in model 2 except for 'mage' and 'magesq' whose VIF was north of 80.  The correlation between these two variables is extremely high (0.99), which results in a large standard error for their coefficients.  This suggests multicollinearity in the model. However, this does not bias results, and does not affect interpretation of the coefficients for the main independent variables of interest, 'logvis_mo' and 'logvis_mo_sq'. \
+
+```{r}
+vif(model2)
+```
 
 ```{r}
 bptest(model2)
 ```
-The Breush-Pagan test for Model 2 is highly significant, which indicates that heteroskedasticity is present.  However, it is unclear that this will be an issue since the very low p-value may again be due to the large sample size, and since the scale-location plot shows a flat smoothing curve in the bulk of data.  The heteroskedasticity-robust Huber-White standard errors will be used for this model due to the uncertainty surrounding violoation of the homoskedasticity assumption.
+The Breush-Pagan test for Model 2 is highly significant, which indicates that heteroskedasticity is present.  However, it is unclear that this will be an issue since the very low p-value may again be due to the large sample size, and since the scale-location plot shows a flat smoothing curve in the bulk of data.  The heteroskedasticity-robust Huber-White standard errors will be used for this model due to the uncertainty surrounding violoation of the homoskedasticity assumption. \
+
 
 ```{r, echo=FALSE}
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
