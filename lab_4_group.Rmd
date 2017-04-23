@@ -682,10 +682,16 @@ Next we look at the Breusch-Pagan test.
 ```{r, echo=FALSE}
 bptest(model_3)
 ```
-The Breusch-Pagan test is significant at any level so we can reject the null hypothesis of constant variance. While the low p-value may be due to the large sample size, the level of significance indicates that we should use the heteroskedasticity-robust Huber-White standard errors.
+The Breusch-Pagan test is significant at any level so we can reject the null hypothesis of constant variance. While the low p-value may be due to the large sample size, the level of significance indicates that we should use the 
+heteroskedasticity-robust Huber-White standard errors.
 
+Evaluating the AIC. The AIC for Model 3 is the lowest of the 3 models thus far, indiciting an improvement of fit over the prior 2 models.
+```{r, echo=FALSE}
 AIC(model_3)
+```
 
+
+Lastly, we evaluate the diagnostic plots to check the remainder of the assumptions.
 ```{r, echo=FALSE}
 plot(model_3)
 ```
