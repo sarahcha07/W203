@@ -597,7 +597,7 @@ shapiro.test(model2$residuals)
 The large sample size and the Central Limit Theorem again allow Model 2 to rely on OLS asymptotics despite the departure from normality demonstrated by its normal q-q plot, the histogram of residuals, and the Shapiro-Wilk test.
 
 Cook's distance remains small for every observation, so outliers are again of no concern.
-```{r}
+```{r, echo=False, eval=FALSE}
 AIC(model2)
 ```
 The Akaike Information Criterion (AIC) for Model 2 is -900.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
