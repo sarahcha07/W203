@@ -285,9 +285,10 @@ We wanted to first understand if birthweight was correlated with whether the mot
 mean(sample$bwght[sample$npvis > 0]) 
 mean(sample$bwght[sample$npvis == 0])
 ```
-However this data set actually has very few moms who received no prenatal care (n = 4) making this metric a less valuable one. \
+\
+However this data set actually has very few moms who received no prenatal care (n = 4) making this metric a less valuable one. 
 
-As we looked deeper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So i attempted cut up a couple of different ways in an effort to minimize the skew. Namely I looked at visits per week and visits per month.  \
+As we looked deeper into both variables, both variables had outlier values (with very few observations) and seemed to be skewing the summary statistics. For example, the median number of visits by the baby mother was 12 but there was an observation where a mother had 40 visits. So i attempted cut up a couple of different ways in an effort to minimize the skew. Namely I looked at visits per week and visits per month.  
 
 Binning visits per month into quintiles showed signs that lower quintile visits (ie less frequent visits), could be correlated with lower birthweights and we know that this representation is less skewed by outliers. Further we see signs that there is an concave, exponential relationship between birthweight and monthly visits. Notably at higher visits, there is a diminishing relationship with infant birthweight. \
 
@@ -416,12 +417,11 @@ hist(sample$npvissq, main = "Distribution of 'npvissq' Variable",
 ```
 
 ## Model 1 \
-
-
+<!--- Don't think we need to include this section any longer
 3. A minimum of three model specifications.  In particular, you should include
 
 - One model with only the explanatory variables of key interest.
-
+-->
 The sample contains multiple variables related to infant health, including birth weight ('bwght'), one-minute APGAR score (omaps), five-minute APGAR score (fmaps), low birth weight ('lbw'), and very-low birth weight ('vlbw').  The purpose of the APGAR score is to determine if a newborn requires immediate medical attention, and background knowledge indicates that infant birth weight is highly indicative of future infant health, so the 'bwght' variable has thus been selected to operationalize the concept of 'infant health' in this preliminary model.  The 'lbw' and 'vlbw' variables are indicators that focus only on a small subset of infants, and a model that uses 'lbw' or 'vlbw' as its dependent variable requires an advanced form of analysis that will not be used in this study.
 
 The given premises regarding infant health identify multiple other variables in the sample that have strong explanatory potential for infant health, namely number of prenatal visits ('npvis'), the month of pregnancy prenatal care began ('monpre'), mother's age ('mage'), drinks per week ('drink'), and cigarettes per day ('cigs').  The sample additionally contains multiple indicator variables representing the race of the parents, including 'mwhte', 'mblck', 'moth', 'fwhte', 'fblck', and 'foth'.  These variables may also increase the explanatory ability of the model, given that a baby's race is related to its birth weight.
