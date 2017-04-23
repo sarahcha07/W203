@@ -1,5 +1,5 @@
 ---
-title: "birthweight"
+title: "Does Prenatal Care Result in Better Health Outcomes for Newborns?"
 author: "Sarah Cha, Andrew Kabatznick, Kalvin Kao"
 date: "April 19, 2017"
 output: pdf_document
@@ -610,6 +610,28 @@ summary(model2_unrestricted)
 The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.
 
 # Model 3
+In Model 3, we expanded on our findings from model 2 to include more variables:
+
+1. Female - we added an indicator variable for 'Female' after having found 'Male' to be highly statistically significant in Model 2. 
+
+2. Indicator variables for 1) mothers who only graduated high school, and 2) mothers who graduated from college
+
+3. Indicator variables for low birthweights - 'lbw' = <2000 grams and 'vlbw' = < 1500 grams.
+
+4. Infant Apgar score - 'fmaps' which we saw in our exploratory data analysis has a small positive correlation with birthweight. 
+
+In doing so, we ran into the following issues which makes these additions problematic:
+
+1. The 'Female' indicator variable has perfect collinearity with the 'Male' variable because the two terms add to 1. As a result statistical software packages like R won't even estimate the model as it is a clear violation of an MLR assumption. 
+
+2. We find statistical significance in the indicator variable for high school education. While this helps increase the fit of the model, we worry that this term could mask some of the causal effects of prenatal care which we will discuss later in the 'Causal Interpretation' section. 
+
+3. Adding two indicator variables for low birthweights is problematic for two reasons: 
+
+  + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping. 
+  
+  + Including these terms makes it more difficult for the model to increase the predictive power but also to have any causal interpretation because we know that low birthweight does not cause lower levels of birthweight. 
+
 
 
 ```{r}
@@ -665,6 +687,7 @@ stargazer(model_1, model2, model_3, type = "text", omit.stat = "f",
   \
 
 
+
 \textbf{Causal interpretation}\
 
 We have been interpreting this regression predictively, ie. for given values of the independent variables what does the fitted model tell us about the baby's birthweight? That said, causal interpretations of regression coefficients in our best-fit model can only be justified by relying on much stricter assumptions than are needed for predictive inference. \
@@ -675,9 +698,9 @@ Further to be a causal model relies on the assumption that birthweight has cause
 
 2. Premature births. We do not know at how many weeks the infants were born. Typically babies born ahead of the full 37 week of pregnancy have smaller birthweights than those carried to full term. We would expect the omitted variable bias in this case to also be positive (upward) as the beta coefficient is likely positive though weeks of pregnancy might be negatively correlated to smoking and number of hospital visits. 
 
-3. More than one baby at a time. Carrying more than 1 baby at a time has been shown to increase stress on the mother's body but is also typically associated with lower newborn birthweights. Excluding an indicator variable for more than 1 baby at a time likely presents an downward bias on the existing OLS estimates. \
+3. More than one baby at a time. Carrying more than 1 baby at a time has been shown to increase stress on the mother's body but is also typically associated with lower newborn birthweights. Excluding an indicator variable for more than 1 baby at a time likely presents an downward bias on the existing OLS estimates. 
 
-If we had a way to measure these terms for our model, we might then be able to assume that our error term is truely random. It is also worth pointing out that as it relates to our existing model and causal interpretation, some of the effect of prenatal care could be hidden by variables like mother's age. We know that pregnant women over the age of 35 are labeled as "higher risk" and as such may be asked to come in for doctor's visits earlier and more frequently. \
+If we had a way to measure these terms for our model, we might then be able to assume that our error term is truely random. It is also worth pointing out that as it relates to our existing model and causal interpretation, some of the effect of prenatal care could be hidden by variables like mother's age and the indicator variable for high school and college education we included in Model 3.. We know that pregnant women over the age of 35 are labeled as "higher risk" and as such may be asked to come in for doctor's visits earlier and more frequently. Further, mothers who are more educated are more likely to be knowledgeable of the benefits of pre-natal care and opt in. We see that the addition of both of these variables into Model 3 has resulted in better fit but decreased the statistical significance of the pre-natal care variable 'visits_pr_mo'.  \
 
 Finally in our discussion around causality, it is worth highlighting though that when we plot our independent variables against the model residuals, we find that the residuals appear unrelated to the values of the independent variables suggesting that we may be able to assume exogeneity. That said we know that exogeneity does not imply causality. Exogeneity is about whether OLS can correctly identify the beta coefficients while causality has stricter assumptions and is about whether manipulations to the regressors do not infludence the error term. 
 
