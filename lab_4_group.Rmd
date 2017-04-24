@@ -379,7 +379,7 @@ This model is not concerned with outliers since the diagnostic plots show that C
 ```{r}
 AIC(model_1)
 ```
-The Akaike Information Criterion (AIC), a parsimony-adjusted measure of fit, for this model is 28420.36.
+The Akaike Information Criterion (AIC), a parsimony-adjusted measure of fit, for this model is 24992.94.
 
 ## Model 2
 For model 2, we took the 'male' variable in model 1 and built on from there with these additions and transformations:
