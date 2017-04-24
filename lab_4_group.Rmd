@@ -171,9 +171,6 @@ num_obs = c(nrow(sample[sample$blackbb == '1', ]), nrow(sample[sample$whitebb ==
       nrow(sample[sample$halfblk_bb == '1', ]), nrow(sample[sample$otherbb == '1', ]), 
       nrow(sample[sample$halfblk_oth_bb == '1', ]), nrow(sample[sample$halfwhte_oth_bb == '1', ]))
 
-variable = c("sample$blackbb", "sample$whitebb", "sample$halfblk_bb", "sample$otherbb", 
-      "sample$halfblk_oth_bb", "sample$halfwhte_oth_bb")
-
 race = c("Black babies", "White babies", "Half black/half white babies", "Other babies", 
       "Half black/half other babies", "Half white/half other babies")
 
@@ -735,7 +732,7 @@ summary(model_3_unrestricted)
 #Regression summary \ 
 Find below a regression table summarizing the results of our 3 models including estimated coefficients and heteroskedascity-robust standard errors, as well as significance (stars represent p-values of 0.05, 0.01, and 0.001, respectively). This shows that almost every single regressor in the later models, 2 and 3, is significant with the exception of 'college.' Having said that, statistical significance is not the same as practical significance. 
 
-Practical significance tells us the magnitude of the observed effect and whether it is meaningful. For example, interpretation of the 'mage' variable suggests that each additional year of aging for the mother results in a 2.9% increase in infant birthweight. This would seem to be practically significant. On the other hand, we see fmaps as being statistically significant in model 3 but its interpretaton is that a 1 point increase in fmaps score equates to a 2.6% increase in birthweight. It's unclear what the practical interpretation and significance of this is given that the APGAR score can only be integers between 0 and 10, and that it can result from a complex combination of factors.
+Practical significance tells us the magnitude of the observed effect and whether it is meaningful. For example, interpretation of the 'mage' variable suggests that each additional year of aging for the mother results in a 2.9% increase in infant birthweight. This implies that a 1 year age difference equates to a 2.9% difference in birthweight which would be seem to be practically significant given its about 100 grams on an average birthweight of 3414 grams. All of the variables included in our modeling had practical significance. 
 
 ```{r, echo=FALSE}
 se.model1 = sqrt(diag(vcovHC(model_1)))
