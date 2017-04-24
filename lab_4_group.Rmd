@@ -116,19 +116,14 @@ title(main = "Histogram of Number of Doctor Visits", line = 0, cex.lab =0.7)
 abline(v = mean(sample$npvis, na.rm= TRUE), col="blue", lwd=3, lty=2)
 ```
 
-<!--Andrew's Comments: Not sure why we show APGAR scores in the plot below. Not sure it makes sense here. I have commented out the section that puts the APGAR scores in the boxplot. Feel free to reintroduce them if there is a good reason for including them-->
 
 ```{r}
-#Plot 3
-#health_var = data.frame(cbind(sample$omaps, sample$fmaps, sample$monpre, sample$npvis))
-#colnames(health_var)= c("One min APGAR score", "Five min APGAR score", "Month prenatal care began", "Number of prenatal visits")
 health_var = data.frame(cbind(sample$monpre, sample$npvis))
 colnames(health_var)= c("Month prenatal care began", "Number of prenatal visits")
 
 long <- melt(health_var)
 par(mar=c(8,11,8,3),cex.axis=1,cex.lab=1)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="",yaxt ="n")
-#axis(2, at = c(1, 2, 3, 4), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
 axis(2, at = c(1, 2), labels = colnames(health_var), tcl = 0, las = 2, cex.axis = .8)
 ```
   \
@@ -186,7 +181,6 @@ grid.table(baby_races)
 ```
   \
   
-<!--Andrew's Comment: Not sure I would discuss APGAR scores here. We've already done some EDA on it above and think if we mention that its an ordinal variable and this does not fit in as a dependent variable. We could then say that as a component of APGAR score is birthweight so we haven't included them in our intial models -->
 Next, we looked at relationships between key variables in the data set, particularly relationship with variables in the data set and the potential outcome variables, birthweight and Apgar scores. \
 
 
@@ -306,14 +300,11 @@ axis(1, at =seq(1,5,1), labels = c("0-20","20-40","40-60","60-80","80-100"),xlab
   \
  
  
- <!--Andrew Comment: If we remove APGAR scores above we may want to remove this section discussing APGAR scores -->
- 
 As it relates to the Apgar scores, we didn't find through exploratory data analysis a reason to believe that they might be highly correlated with number of prenatal visits or month prenatal care began. \
 
 
 
 ```{r}
-# looking at omaps vs # of visits - no strong trend
 avg_visits<- sapply(split(sample,sample$omaps), function(x) {
   colMeans(x["npvis"],na.rm=TRUE)
 })
@@ -322,7 +313,6 @@ barplot(avg_visits, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 20), xlab 
 
 cor(sample$npvis, sample$omaps, use = "complete.obs")
 
-# looking at omaps vs # monpre- no strong trend
 avg_mon<- sapply(split(sample,sample$omaps), function(x) {
   colMeans(x["monpre"],na.rm=TRUE)
 })
@@ -330,155 +320,13 @@ barplot(avg_mon, names.arg= c(0,1,2,3,4,5,6,7,8,9,10), ylim = c(0, 4), xlab = "A
 ```
 
 
-<!--Andrew's Comments: Don't think we mean to include any of the analysis below as we give it no formal discussion. Looks like this was just some basic EDA. -->
-```{r eval=FALSE, echo=FALSE}
-#mother's age-- nice almost normal distribution
-hist(sample$mage, main = "Distribution of 'mage' Variable",
-     xlab = "Mother's Age (years)")
+## Model 1
 
-#mother's education-- spikes at 12 and 16 years (HS and college), with some extreme low values
-#30 NAs
-hist(sample$meduc, main = "Distribution of 'meduc' Variable",
-     xlab = "Mother's Education (years)")
-
-#month prenatal care began-- nearly exponential distribution with spikes at 1 and 2 months
-#assuming this is the month of pregnancy.  given that there are fewer values above 3 months, we may want to break this up into indicator variables for the term that prenatal care began... i guess we'll see
-#5 NAs
-hist(sample$monpre, main = "Distribution of 'monpre' Variable",
-     xlab = "Month Prenatal Care Began")
-
-#number of prenatal visits-- normal with a spike at 12 visits and a long right tail
-#68 NAs
-hist(sample$npvis, main = "Distribution of 'npvis' Variable",
-     xlab = "Total Number of Prenatal Visits")
-
-#father's age-- almost normal with a positive skew
-#6 NAs
-hist(sample$fage, main = "Distribution of 'fage' Variable",
-     xlab = "Father's Age (years)")
-
-#father's education-- very similar to meduc (spikes at 12 and 16 years, with some extreme low values)
-hist(sample$feduc, main = "Distribution of 'feduc' Variable",
-     xlab = "Father's Education (years)")
-
-#cigs-- extreme positive skew, with mainly values of 0
-hist(sample$cigs, main = "Distribution of 'cigs' Variable",
-     xlab = "Average Cigarettes Per Day")
-
-#drinks-- pretty much all values of 0
-hist(sample$drink, main = "Distribution of 'drinks' Variable",
-     xlab = "Average Drinks Per Week")
-
-#lbw =1 if bwght <= 2000
-sum(sample$lbw == 0)#1802
-sum(sample$lbw == 1)#30
-
-#vlbw =1 if bwght <= 1500
-sum(sample$vlbw == 0)#1819
-sum(sample$vlbw == 1)#13
-
-#male =1 if baby male
-sum(sample$male == 0)#891
-sum(sample$male == 1)#941
-
-#mwhte =1 if mother white
-sum(sample$mwhte == 0)#208
-sum(sample$mwhte == 1)#1624
-
-#mblck =1 if mother black
-sum(sample$mblck == 0)#1723
-sum(sample$mblck == 1)#109
-
-#moth =1 if mother is other
-sum(sample$moth == 0)#1733
-sum(sample$moth == 1)#99
-
-#fwhte =1 if father white
-sum(sample$fwhte == 0)#202
-sum(sample$fwhte == 1)#1630
-
-#fblck =1 if father black
-sum(sample$fblck == 0)#1725
-sum(sample$fblck == 1)#107
-
-#foth =1 if father is other
-sum(sample$foth == 0)#1737
-sum(sample$foth == 1)#95
-
-#lbwght log(bwght)-- similar distribution as level bwght... why would we use a log transform
-hist(sample$lbwght, main = "Distribution of 'lbwght' Variable",
-     xlab = "log(bwght)")
-
-#magesq mage^2-- again, an almost normal distribution, but mage was already almost normal so why would we use this
-hist(sample$magesq, main = "Distribution of 'magesq' Variable",
-     xlab = "mage^2")
-
-#npvissq npvis^2-- exponential with positive skew... but npvis was already almost normal, so why would we do this?
-hist(sample$npvissq, main = "Distribution of 'npvissq' Variable",
-     xlab = "npvis^2")
-```
-
-## Model 1 \
-<!-- Andrew Comment: Don't think we need to include this section any longer
-3. A minimum of three model specifications.  In particular, you should include
-
-- One model with only the explanatory variables of key interest.
--->
-
-The sample contains multiple variables related to infant health, including birth weight ('bwght'), one-minute APGAR score (omaps), five-minute APGAR score (fmaps), low birth weight ('lbw'), and very-low birth weight ('vlbw').  The purpose of the APGAR score is to determine if a newborn requires immediate medical attention, and background knowledge indicates that infant birth weight is highly indicative of future infant health, so the 'bwght' variable has thus been selected to operationalize the concept of 'infant health' in this preliminary model. <!-- Andrew Comment: Additionally, using APGAR scores are ordinal so using these as the dependent variable requires an advanced form of analysis that will not be used in this study. Additionally,-->  The 'lbw' and 'vlbw' variables are indicators that focus only on a small subset of infants, and a model that uses 'lbw' or 'vlbw' as its dependent variable requires an advanced form of analysis that will not be used in this study.
+The sample contains multiple variables related to infant health, including birth weight ('bwght'), one-minute APGAR score (omaps), five-minute APGAR score (fmaps), low birth weight ('lbw'), and very-low birth weight ('vlbw').  The purpose of the APGAR score is to determine if a newborn requires immediate medical attention, and background knowledge indicates that infant birth weight is highly indicative of future infant health, so the 'bwght' variable has thus been selected to operationalize the concept of 'infant health' in this preliminary model. Additionally, APGAR scores are ordinal so using these as the dependent variable requires an advanced form of analysis that will not be used in this study. Additionally, the 'lbw' and 'vlbw' variables are indicators that focus only on a small subset of infants, and a model that uses 'lbw' or 'vlbw' as its dependent variable requires an advanced form of analysis that will not be used in this study.
 
 The given premises regarding infant health identify multiple other variables in the sample that have strong explanatory potential for infant health, namely number of prenatal visits ('npvis'), the month of pregnancy prenatal care began ('monpre'), mother's age ('mage'), drinks per week ('drink'), and cigarettes per day ('cigs').  The sample additionally contains multiple indicator variables representing the race of the parents, including 'mwhte', 'mblck', 'moth', 'fwhte', 'fblck', and 'foth'.  These variables may also increase the explanatory ability of the model, given that a baby's race is related to its birth weight.
 
 This study begins its analysis by characterizing a simple foundational model upon which deeper analysis can then be performed: $bwght = \beta_0 + \beta_1 mage + \beta_2 monpre + u$
-
-```{r, echo=FALSE}
-# #maybe save the race stuff for later
-# blackBaby = sample$mblck*sample$fblck
-# whiteBaby = sample$mwhte*sample$fwhte
-# bBabyWeight = sample$bwght[blackBaby == 1]
-# wBabyWeight = sample$bwght[whiteBaby == 1]
-# mean(bBabyWeight)
-# mean(wBabyWeight)
-# #hist(bBabyWeight)
-# #hist(wBabyWeight)
-
-# #data cleaning in progress
-# cleanData_1 = sample[(!is.na(sample$monpre)) & (!is.na(sample$cigs)) & (!is.na(sample$drink)),]
-# #the following are indicators we might want to use instead
-# latePre = factor(ifelse(cleanData_1$monpre>6, 1, 0))
-# earlyPre = factor(ifelse(cleanData_1$monpre<3, 1, 0))
-# #prenatal1 = factor(ifelse(cleanData_1$monpre==1, 1, 0))
-# prenatal2 = factor(ifelse(cleanData_1$monpre==2, 1, 0))
-# prenatal3 = factor(ifelse(cleanData_1$monpre==3, 1, 0))
-# prenatal4 = factor(ifelse(cleanData_1$monpre==4, 1, 0))
-# prenatal5 = factor(ifelse(cleanData_1$monpre==5, 1, 0))
-# prenatal6 = factor(ifelse(cleanData_1$monpre==6, 1, 0))
-# prenatal7 = factor(ifelse(cleanData_1$monpre==7, 1, 0))
-# prenatal8 = factor(ifelse(cleanData_1$monpre==8, 1, 0))
-# prenatal9 = factor(ifelse(cleanData_1$monpre==9, 1, 0))
-# #prenatalTri1 = factor(ifelse(cleanData_1$monpre < 4, 1, 0))
-# prenatalTri2 = factor(ifelse((cleanData_1$monpre > 3) & (cleanData_1$monpre < 7), 1, 0))
-# prenatalTri3 = factor(ifelse(cleanData_1$monpre > 6, 1, 0))
-# yesCigs = factor(ifelse(cleanData_1$cigs>0, 1, 0))
-# yesDrinks = factor(ifelse(cleanData_1$drink>0, 1, 0))
-# 
-# visitFreq = cleanData_1$npvis/(10-cleanData_1$monpre)
-
-#model_1 = lm(bwght ~ mage + magesq + cigs + drink + visitFreq, data = cleanData_1)
-#model_1_alt = lm(bwght ~ mage + cigs + monpre, data=sample)
-#model_1 = lm(bwght ~ mage + cigs + npvis, data=cleanData_1)
-#model_1 = lm(bwght ~ cigs + monpre, data = cleanData_1)
-#model_1 = lm(bwght ~ drink + npvis, data = cleanData_1)
-#model_1 = lm(bwght ~ cigs + npvis, data = cleanData_1)
-#model_1_alt2 = lm(bwght ~ mage, data=cleanData_1)
-#model_1 = lm(bwght ~ mage + npvis, data = cleanData_1)
-#model_1_alt3 = lm(bwght ~ mage + cigs, data=cleanData_1)
-#model_1 = lm(bwght ~ cigs, data=cleanData_1)
-#model_1 = lm(bwght ~ cigs + monpre, data=cleanData_1)
-#model_1 = lm(bwght ~ monpre, data=cleanData_1)#heteroskedasticity
-#model_1 = lm(bwght ~ npvis, data=cleanData_1)#heteroskedasticity
-#model_1 = lm
-```
 
 ```{r}
 model_1 = lm(bwght ~ mage + monpre, data=sample)
@@ -618,7 +466,6 @@ The Akaike Information Criterion (AIC) for Model 2 is `r AIC(model2)`.  This is 
 residualsSquared2 = (model2$residuals)^2
 model2_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
 summary(model2_unrestricted)
-#should also do secondary test for zero conditional mean assumption
 ```
 <!---The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.--->
 
@@ -639,18 +486,6 @@ The model is now presented, its assumptions will be assessed, and a discussion o
 
 The model: $log(bwght) = \beta_0 + \beta_1cigs + \beta_2log(vis_mo) + \beta_3(log(vis_mo))^2 + \beta_3vis\_mo\_35 + \beta_4otherbb + \beta_5female + \beta_6male + \beta_7mage + \beta_8magesq + \beta_9lbw + \beta_{10}vlbw + \beta_{11}fmaps + \beta_{12}mHS + \beta_{13}mCollege$
 
-<!--Andrew Comment: Kalvin pelase verify we can delete this part. Looks like all of this is covered in the next section -->
-```{r, echo=FALSE, eval=FALSE}
-#just some scrathwork here
-sum((sample$drink > 0)&(sample$cigs > 0))
-drankinANDsmokin = (sample$drink)*(sample$cigs)
-parentsWhite = (as.numeric(sample$mwhte))*(as.numeric(sample$fwhte))
-
-#replacing race dummy variable trap with a gender dummy variable trap
-female = (factor(ifelse((sample$male==0), 1, 0)))
-model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
-model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
-```
 
 ```{r}
 fHS = (factor(ifelse(((sample$feduc)>=12)&((sample$feduc<=16)), 1, 0)))
@@ -658,17 +493,14 @@ fCollege = (factor(ifelse((sample$feduc>=16), 1, 0)))
 mHS = (factor(ifelse((sample$meduc>=12)&(sample$meduc<=16), 1, 0)))
 mCollege = (factor(ifelse((sample$meduc>=16), 1, 0)))
 
-#indicator term for mothers 35+
 mOver35 = as.numeric(factor(ifelse((sample$mage>=35), 1, 0))) - 1
 
-#interaction-- mothers over 35 are high risk and should have more frequent visits
-#vis_mo_35 = mOver35*(sample$logvis_mo)
 vis_mo_35 = mOver35*(sample$visits_pr_mo)
 
-#
+
 female = (factor(ifelse((sample$male==0), 1, 0)))
 model_3 =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
-model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)#model 3 with the 'base condition' for baby gender (female) removed, so that vif can be calculated
+model_3b =  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege, data = sample)
 
 summary(model_3)
 ```
@@ -710,11 +542,9 @@ Cook's distance remains small for every observation, so outliers are again of no
 
 The AIC for Model 3 is `r AIC(model_3)`, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
 ```{r echo = FALSE}
-#really not sure if the RESET should be done here
 residualsSquared3 = (model_3$residuals)^2
 model_3_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege + residualsSquared3, data = sample)
 summary(model_3_unrestricted)
-#should also do secondary test for zero conditional mean assumption
 ```
 <!---The regression specification error test continues to show that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 3 is still misspecified.--->
 
