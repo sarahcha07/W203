@@ -58,7 +58,7 @@ Our initial plots show that birthweight is approximately normally distributed wi
 
 
 ```{r}
-par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.8)
+par(mar=c(6,6,10,3),cex.axis=1,cex.lab=0.8)
 hist(sample$bwght, main ="", xlab = "", col = "blue", tcl = 0)
 title("Distribution of infant birthweight (in grams)", line = 0, cex.lab =0.5)
 abline(v = mean(sample$bwght, na.rm= TRUE), col="light blue", lwd=3, lty=2)
@@ -67,7 +67,7 @@ abline(v = mean(sample$bwght, na.rm= TRUE), col="light blue", lwd=3, lty=2)
 
 
 ```{r}
-par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.8)
+par(mar=c(6,6,10,3),cex.axis=1,cex.lab=0.8)
 hist(sample$omaps, main ="", xlab = "" ,breaks = 0:11 - 0.5, col = "pink", tcl = 0)
 title("Distribution of one minute APGAR score", line = 0, cex.lab =0.5)
 abline(v = mean(sample$omaps, na.rm= TRUE), col="red", lwd=3, lty=2)
@@ -76,7 +76,7 @@ abline(v = mean(sample$omaps, na.rm= TRUE), col="red", lwd=3, lty=2)
 
 
 ```{r}
-par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.5)
+par(mar=c(6,6,10,3),cex.axis=1,cex.lab=0.5)
 hist(sample$fmaps, main="", xlab = "", breaks = 0:11 -0.5, col = "light blue", tcl = 0)
 title("Distribution of Five Minute APGAR score", line = 0, cex.lab =0.8)
 abline(v = mean(sample$fmaps, na.rm= TRUE), col="blue", lwd=3, lty=2)
@@ -92,7 +92,7 @@ We started out by looking at the parents in our data set. Average mother and fat
 parent_char = data.frame(cbind(sample$mage, sample$meduc, sample$fage, sample$feduc))
 colnames(parent_char)= c("Mother's age", "Mother's education", "Father's age", "Father's education")
 long <- melt(parent_char)
-par(mar=c(7,7,8,3),cex.axis=1,cex.lab=0.7)
+par(mar=c(7,7,10,3),cex.axis=1,cex.lab=0.7)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
 axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, cex.axis = .7)
 ```
@@ -101,7 +101,7 @@ axis(2, at = c(1, 2, 3, 4), labels = colnames(parent_char), tcl = 0, las = 2, ce
 Next we analyzed some of the variables in the data set that we thought might have explanatory potential on infant health including number of prenatal visits, month prenatal care began, cigarettes smoked, and alcoholic beverages consumed. The average mother in this sample began prenatal care a little more than 2 months into their pregnancy (~2.14 months) while number of prenatal visits averaged 11.62. We can see that the distribution of pre-natal care visits is wide spanning anywhere from 0 and 40 while 90% (n=`r nrow(sample[(sample$npvis <= 15) & (sample$npvis >= 5), ])`) of the values are between 5 and 15 visits. Start month of prenatal care appears to have positive skew with 90% (n=`r nrow(sample[(sample$monpre <= 3), ])`) of the mothers beginning care at 3 months or earlier. \
 
 ```{r}
-par(mar=c(7,7,8,0))
+par(mar=c(7,7,10,0))
 hist(sample$monpre, main="", col = "pink", xlab ="")
 title("Distribution of Month Prenatal care began (monpre)", line = 0, cex.lab =0.7)
 abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
@@ -109,7 +109,7 @@ abline(v = mean(sample$monpre, na.rm= TRUE), col="red", lwd=3, lty=2)
 
 
 ```{r}
-par(mar=c(7,7,8,0))
+par(mar=c(7,7,10,0))
 hist(sample$npvis, breaks = 0:41 -.5, main ="", col = "light blue", xlab = "", cex = 0.5)
 title(main = "Histogram of Number of Doctor Visits", line = 0, cex.lab =0.7)
 abline(v = mean(sample$npvis, na.rm= TRUE), col="blue", lwd=3, lty=2)
@@ -140,7 +140,7 @@ We looked for insights on the smoking and alcoholic consumption behavior of the 
 cigs_drinks = data.frame(cbind(sample$drink, sample$cigs))
 colnames(cigs_drinks) = c("Drinks", "Cigarettes")
 long <- melt(cigs_drinks)
-par(mar=c(5,5,8,7),cex.axis=1,cex.lab=1)
+par(mar=c(5,5,10,7),cex.axis=1,cex.lab=1)
 plot(value ~ variable, data=long, horizontal = TRUE, col = "blue", xlab ="", ylab="", yaxt ="n")
 axis(2, at = c(1, 2), labels = colnames(cigs_drinks), tcl = 0, las = 2, cex.axis = .7)
 ```
@@ -197,7 +197,7 @@ Birthweight and Apgar scores do show some small positive correlation in the data
 
 ```{r}
 #relationship between bwght and omaps
-par(mar=c(6,6,8,3),cex.axis=1,cex.lab=0.5)
+par(mar=c(6,6,10,3),cex.axis=1,cex.lab=0.5)
 z = plot(jitter(sample$omaps), jitter(sample$bwght), main = "", xlab = "APGAR score", ylab = "Infant birthweight", cex.lab = 0.8)
 title(main = "Birthweight vs. APGAR score", line = 0.5, cex.lab = 0.6)
 abline(lsfit(sample$omaps, sample$bwght))
@@ -485,15 +485,20 @@ This study begins its analysis by characterizing a simple foundational model upo
 ```{r}
 model_1 = lm(bwght ~ mage + monpre, data=sample)
 summary(model_1)
+par(mar=c(3,3,10,0))
 plot(model_1, which = 1)
+par(mar=c(3,3,10,0))
 plot(model_1, which = 2)
+par(mar=c(3,3,10,0))
 plot(model_1, which = 3)
+par(mar=c(3,3,10,0))
 plot(model_1, which = 4)
 ```
 
 \emph{Assumption 1: Linear Population Model}\
 The assumption of a linear population model is met since this model has been defined to be linear in its parameters.
 ```{r}
+par(mar=c(3,3,10,0))
 plot(model_1$fitted.values, (model_1$fitted.values + model_1$residuals), main = "Observed vs Fitted Values for Model 1", xlab = "Fitted", ylab = "Observed")
 ```
 Additionally, the observed vs predicted values plot for this model does not provide a strong indication of non-linearity.
@@ -522,6 +527,7 @@ The Breush-Pagan test is not significant enough to reject the null hypothesis of
 
 \emph{Assumption 6: Normality of Errors}\
 ```{r}
+par(mar=c(3,3,10,0))
 hist(model_1$residuals, breaks = "fd", main = "Distribution of Residuals for Model 1", xlab = "Residuals")
 shapiro.test(model_1$residuals)
 ```
@@ -566,9 +572,13 @@ sample$logvis_mo_sq = ifelse(sample$visits_pr_mo > 0, (log(sample$visits_pr_mo))
 model2=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq, data = sample)
 summary(model2)
 vif(model2)
+par(mar=c(3,3,10,0))
 plot(model2, which = 1)
+par(mar=c(3,3,10,0))
 plot(model2, which = 2)
+par(mar=c(3,3,10,0))
 plot(model2, which = 3)
+par(mar=c(3,3,10,0))
 plot(model2, which = 5)
 ```
 
@@ -577,6 +587,7 @@ We see signs of potential bias in Model 2 relative to Model 1 in looking at the 
 
 The assumption of a linear population is still met since this model has been defined to be linear in its parameters.
 ```{r}
+par(mar=c(3,3,10,0))
 plot(model2$fitted.values, (model2$fitted.values + model2$residuals), main = "Observed vs Fitted Values for Model 2", xlab = "Fitted", ylab = "Observed")
 ```
  \
@@ -618,6 +629,7 @@ The Breush-Pagan test for Model 2 is highly significant, which indicates that he
 
 
 ```{r}
+par(mar=c(3,3,10,0))
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
 shapiro.test(model2$residuals)
 ```
@@ -687,14 +699,19 @@ summary(model_3)
 \emph{Changes to the 6 Classical Linear Model Assumptions for Model 3}\
 \subparagraph{\emph{Diagnostic Plots for Model 3:}}
 ```{r}
+par(mar=c(3,3,10,0))
 plot(model_3, which = 1)
+par(mar=c(3,3,10,0))
 plot(model_3, which = 2)
+par(mar=c(3,3,10,0))
 plot(model_3, which = 3)
+par(mar=c(3,3,10,0))
 plot(model_3, which = 5)
 ```
 
 The assumption of a linear population is still met since this model has been defined to be linear in its parameters.
 ```{r}
+par(mar=c(3,3,10,0))
 plot(model_3$fitted.values, (model_3$fitted.values + model_3$residuals), main = "Observed vs Fitted Values for Model 3", xlab = "Fitted", ylab = "Observed")
 ```
 Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
@@ -712,6 +729,7 @@ bptest(model_3)
 The Breusch-Pagan test is significant at any level, allowing the rejection of the null hypothesis of constant variance, and further supporting the observation of heteroskedasticity. While the large sample size may have contributed to the low p-value, the combined evidence indicates that the assumption of homoskedasticity is violated for model 3, and that the heteroskedasticity-robust Huber-White standard errors should again be used.
 
 ```{r}
+par(mar=c(3,3,10,0))
 hist(model2$residuals, breaks = "fd", main = "Distribution of Residuals for Model 2", xlab = "Residuals")
 shapiro.test(model2$residuals)
 ```
