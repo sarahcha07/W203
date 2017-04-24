@@ -3,6 +3,7 @@ title: "Does Prenatal Care Result in Better Health Outcomes for Newborns?"
 author: "Sarah Cha, Andrew Kabatznick, Kalvin Kao"
 date: "April 19, 2017"
 output: pdf_document
+geometry: margin=0.9in
 header-includes:
    - \usepackage{bbm}
    - \usepackage{amsmath}
