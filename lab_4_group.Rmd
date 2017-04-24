@@ -534,7 +534,7 @@ This model is not concerned with outliers since the diagnostic plots show that C
 AIC(model_1)
 ```
 The Akaike Information Criterion (AIC), a parsimony-adjusted measure of fit, for this model is 28420.36.
-```{r echo = false}
+```{r echo = FALSE}
 residualsSquared = (model_1$residuals)^2
 model_1_unrestricted = lm(bwght ~ mage + monpre + residualsSquared, data = sample)
 summary(model_1_unrestricted)
@@ -616,7 +616,7 @@ As mentioned above, the large sample size and the Central Limit Theorem again al
 Cook's distance remains small for every observation, so outliers are again of no concern.
 
 The Akaike Information Criterion (AIC) for Model 2 is `r AIC(model2)`.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
-```{r echo = false}
+```{r echo = FALSE}
 residualsSquared2 = (model2$residuals)^2
 model2_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
 summary(model2_unrestricted)
@@ -711,7 +711,7 @@ The normal q-q plot, histogram of residuals, and highly significant Shapiro-Wilk
 Cook's distance remains small for every observation, so outliers are again of no concern in model 3.
 
 The AIC for Model 3 is `r AIC(model_3)`, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
-```{r echo = false}
+```{r echo = FALSE}
 #really not sure if the RESET should be done here
 residualsSquared3 = (model_3$residuals)^2
 model_3_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege + residualsSquared3, data = sample)
