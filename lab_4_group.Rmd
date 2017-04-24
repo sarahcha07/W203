@@ -496,12 +496,7 @@ plot(model_1, which = 4)
 ```
 
 \emph{Assumption 1: Linear Population Model}\
-The assumption of a linear population model is met since this model has been defined to be linear in its parameters.
-```{r}
-par(mar=c(3,3,10,0))
-plot(model_1$fitted.values, (model_1$fitted.values + model_1$residuals), main = "Observed vs Fitted Values for Model 1", xlab = "Fitted", ylab = "Observed")
-```
-Additionally, the observed vs predicted values plot for this model does not provide a strong indication of non-linearity.
+The assumption of a linear population model is met since this model has been defined to be linear in its parameters.  Additionally, the residuals vs fitted values plot for this model does not provide a strong indication of non-linearity.
 
 \emph{Assumption 2: Random Sampling}\
 The sample used is expected to be random by design, and unfortunately, the data collection process cannot be evaluated.  However, a closer look at the 'fblck', 'fwhte', 'mblck', and 'mwhte' variables shows that less than 100 babies (5%) in the data are black (defined as having both black parents), while the vast majority are white (defined by having both white parents).  Given that the black population in the US is approximately 12% (or 'over 10%') of the total population, the sample used in this study is not completely representative of the population and may have a minor grouping issue with respect to the race of babies.  Examination of the 'monpre', 'npvis', 'omaps', 'fmaps', 'cigs', and 'drink' variables shows that most mothers in the data had early and frequent prenatal care, most infants had high APGAR scores (especially by the five-minute mark), and that most mothers refrained from cigarettes and drinking during pregnancy.  These variables lack data with respect to poor prenatal care and poor infant health, but this is acceptable since such distributions are roughly representative of the population.
@@ -539,12 +534,12 @@ This model is not concerned with outliers since the diagnostic plots show that C
 AIC(model_1)
 ```
 The Akaike Information Criterion (AIC), a parsimony-adjusted measure of fit, for this model is 28420.36.
-```{r}
+```{r echo = false}
 residualsSquared = (model_1$residuals)^2
 model_1_unrestricted = lm(bwght ~ mage + monpre + residualsSquared, data = sample)
 summary(model_1_unrestricted)
 ```
-The regression specification error test (RESET) shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant.  This suggests that the model is actually misspecified.
+<!---The regression specification error test (RESET) shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant.  This suggests that the model is actually misspecified.--->
 
 ## Model 2
 For model 2, we took the 'male' variable in model 1 and built on from there with these additions and transformations:
@@ -621,13 +616,13 @@ As mentioned above, the large sample size and the Central Limit Theorem again al
 Cook's distance remains small for every observation, so outliers are again of no concern.
 
 The Akaike Information Criterion (AIC) for Model 2 is `r AIC(model2)`.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
-```{r}
+```{r echo = false}
 residualsSquared2 = (model2$residuals)^2
 model2_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
 summary(model2_unrestricted)
 #should also do secondary test for zero conditional mean assumption
 ```
-The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.
+<!---The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.--->
 
 # Model 3
 A problematic model may also arise in the attempt to grapple with the complexities in the given data.  Motivations might include:
@@ -692,12 +687,7 @@ par(mar=c(3,3,10,0))
 plot(model_3, which = 5)
 ```
 
-The assumption of a linear population is still met since this model has been defined to be linear in its parameters.
-```{r}
-par(mar=c(3,3,10,0))
-plot(model_3$fitted.values, (model_3$fitted.values + model_3$residuals), main = "Observed vs Fitted Values for Model 3", xlab = "Fitted", ylab = "Observed")
-```
-Additionally, the observed vs predicted values plot for this model does not provide a clear indication of non-linearity.
+The assumption of a linear population is still met since this model has been defined to be linear in its parameters.  Additionally, the residuals vs fitted values plot for this model does not provide a clear indication of non-linearity.
 
 The sample has not changed for Model 2, so it is still considered to be random.
 ```{r}
@@ -721,14 +711,14 @@ The normal q-q plot, histogram of residuals, and highly significant Shapiro-Wilk
 Cook's distance remains small for every observation, so outliers are again of no concern in model 3.
 
 The AIC for Model 3 is `r AIC(model_3)`, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
-```{r}
+```{r echo = false}
 #really not sure if the RESET should be done here
 residualsSquared3 = (model_3$residuals)^2
 model_3_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege + residualsSquared3, data = sample)
 summary(model_3_unrestricted)
 #should also do secondary test for zero conditional mean assumption
 ```
-The regression specification error test continues to show that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 3 is still misspecified.
+<!---The regression specification error test continues to show that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 3 is still misspecified.--->
 
 \emph{The problems with Model 3:}
 
