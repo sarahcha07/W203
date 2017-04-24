@@ -385,7 +385,6 @@ residualsSquared = (model_1$residuals)^2
 model_1_unrestricted = lm(bwght ~ mage + monpre + residualsSquared, data = sample)
 summary(model_1_unrestricted)
 ```
-<!---The regression specification error test (RESET) shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant.  This suggests that the model is actually misspecified.--->
 
 ## Model 2
 For model 2, we took the 'male' variable in model 1 and built on from there with these additions and transformations:
@@ -467,7 +466,6 @@ residualsSquared2 = (model2$residuals)^2
 model2_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
 summary(model2_unrestricted)
 ```
-<!---The regression specification error test again shows that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 2 is still misspecified, and moreover that there are still some important explanatory variables that have not been observed in the data.--->
 
 # Model 3
 A problematic model may also arise in the attempt to grapple with the complexities in the given data.  Motivations might include:
@@ -546,7 +544,7 @@ residualsSquared3 = (model_3$residuals)^2
 model_3_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege + residualsSquared3, data = sample)
 summary(model_3_unrestricted)
 ```
-<!---The regression specification error test continues to show that when adding the squared residuals to the model as an independent variable, the coefficient for that term is highly significant, suggesting that model 3 is still misspecified.--->
+
 
 \emph{The problems with Model 3:}
 
