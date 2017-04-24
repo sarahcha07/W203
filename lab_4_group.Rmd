@@ -380,7 +380,7 @@ This model is not concerned with outliers since the diagnostic plots show that C
 AIC(model_1)
 ```
 The Akaike Information Criterion (AIC), a parsimony-adjusted measure of fit, for this model is 28420.36.
-```{r echo = FALSE, eval = FALSE}
+```{r echo = FALSE}
 residualsSquared = (model_1$residuals)^2
 model_1_unrestricted = lm(bwght ~ mage + monpre + residualsSquared, data = sample)
 summary(model_1_unrestricted)
@@ -461,7 +461,7 @@ As mentioned above, the large sample size and the Central Limit Theorem again al
 Cook's distance remains small for every observation, so outliers are again of no concern.
 
 The Akaike Information Criterion (AIC) for Model 2 is `r AIC(model2)`.  This is much lower than the AIC for Model 1, indicating a substantially improved fit for Model 2.
-```{r echo = FALSE, eval = FALSE}
+```{r echo = FALSE}
 residualsSquared2 = (model2$residuals)^2
 model2_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + otherbb+ male + mage + magesq + residualsSquared2, data = sample)
 summary(model2_unrestricted)
@@ -539,7 +539,7 @@ The normal q-q plot, histogram of residuals, and highly significant Shapiro-Wilk
 Cook's distance remains small for every observation, so outliers are again of no concern in model 3.
 
 The AIC for Model 3 is `r AIC(model_3)`, which is the lowest of the 3 models thus far, indicating a further improvement of fit over the prior 2 models.
-```{r echo = FALSE, eval = FALSE}
+```{r echo = FALSE}
 residualsSquared3 = (model_3$residuals)^2
 model_3_unrestricted=  lm(lbwght ~ cigs + logvis_mo + logvis_mo_sq + vis_mo_35 + otherbb + female + male + mage + magesq + lbw + vlbw + fmaps + mHS + mCollege + residualsSquared3, data = sample)
 summary(model_3_unrestricted)
@@ -557,8 +557,6 @@ summary(model_3_unrestricted)
   + The two terms 'lbw' and 'vlbw' introduce high collinearity because the two are highly related and overlapping.
   + Since lbw and vlbw are calculated from the dependent variable, their use as explanatory variables ruins the ceteris paribus interpretation of the model coefficients.  Together, they set a different intercept for each weight range (0-1500, 1500-2000, and 2000+).  It is nonsensical to have separate intercepts for different weight ranges since the model is intended to explain what causes birth weight to go from one range to the next.  Furthermore, using independent variables that are calculated from the dependent variable is a violation of the linearity assumption.
   + The separation of fitted values into three clusters, as shown in the diagnostic plots, demonstrates the problem of 'lbw' and 'vlbw' resulting in a separate estimation for each weight range, which is incorrect.
-
-4. Use of 'fmaps' as an independent variable is not appropriate, since it is measured after birth.  It has both high statistical and high practical significance in the model, which will be discussed later.  This combination of results might lead a research to believe it is an important variable, but in the real world, it makes no sense to predict birth weight with a metric taken after birth.
 
 #Regression summary \ 
 Find below a regression table summarizing the results of our 3 models including estimated coefficients and heteroskedascity-robust standard errors, as well as significance (stars represent p-values of 0.05, 0.01, and 0.001, respectively). This shows that almost every single regressor in the later models, 2 and 3, is significant with the exception of 'college.' Having said that, statistical significance is not the same as practical significance. 
