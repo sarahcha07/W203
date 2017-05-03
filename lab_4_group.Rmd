@@ -16,7 +16,7 @@ header-includes:
 
 # Introduction
 
-The following analyses provide an investigation of the effects of prenatal care on infant health.  Funding for the study is provided by an anonymous health advocacy group and the data is taken from the National Center for Health Statistics and from birth certificates.  This report presents statistical models which are motivated by widely accepted claims regarding pregnancy and infant health:
+The following 1233 analyses provide an investigation of the effects of prenatal care on infant health.  Funding for the study is provided by an anonymous health advocacy group and the data is taken from the National Center for Health Statistics and from birth certificates.  This report presents statistical models which are motivated by widely accepted claims regarding pregnancy and infant health:
 
 Infant health can be measured by birth weight-- low birth weights are associated with multiple developmental issues.  Birth weight is affected by race, the duration of gestation prior to birth, and prenatal growth rate, and prenatal growth rate in turn is governed by poverty, mother's age, drug use, alcohol, smoking/nicotine, diseases, mother's diet and physical health, mother's prenatal depression, and environmental toxins.  Additionally, early and regular prenatal care is known to reduce the chance of infant death and developmental problems.
 
